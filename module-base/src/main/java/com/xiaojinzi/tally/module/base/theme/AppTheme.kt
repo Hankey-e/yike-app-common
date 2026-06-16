@@ -17,6 +17,12 @@ import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_KLEIN_BLUE
 import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_OLIVE_GREEN
 import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_SCHENBRUNN_YELLOW
 import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_TITIAN_RED
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_CONCRETE_GRAY
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_SANDSTONE_BEIGE
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_INK_SLATE
+import com.xiaojinzi.tally.lib.res.ui.theme.concrete.ConcreteGrayAppTheme
+import com.xiaojinzi.tally.lib.res.ui.theme.sandstone.SandstoneBeigeAppTheme
+import com.xiaojinzi.tally.lib.res.ui.theme.inkslate.InkSlateAppTheme
 import com.xiaojinzi.tally.lib.res.ui.theme.custom1.Custom1AppTheme
 import com.xiaojinzi.tally.lib.res.ui.theme.five.TitianRedAppTheme
 import com.xiaojinzi.tally.lib.res.ui.theme.four.SchenbrunnYellowAppTheme
@@ -86,6 +92,21 @@ fun AppTheme(
                 )
 
                 THEME_NAME_CUSTOM1 -> Custom1AppTheme(
+                    useDarkTheme = useDarkThemeAdapter,
+                    content = content,
+                )
+
+                THEME_NAME_CONCRETE_GRAY -> ConcreteGrayAppTheme(
+                    useDarkTheme = useDarkThemeAdapter,
+                    content = content,
+                )
+
+                THEME_NAME_SANDSTONE_BEIGE -> SandstoneBeigeAppTheme(
+                    useDarkTheme = useDarkThemeAdapter,
+                    content = content,
+                )
+
+                THEME_NAME_INK_SLATE -> InkSlateAppTheme(
                     useDarkTheme = useDarkThemeAdapter,
                     content = content,
                 )

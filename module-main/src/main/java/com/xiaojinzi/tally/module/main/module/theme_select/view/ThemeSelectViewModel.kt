@@ -10,6 +10,12 @@ import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_KLEIN_BLUE
 import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_OLIVE_GREEN
 import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_SCHENBRUNN_YELLOW
 import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_TITIAN_RED
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_CONCRETE_GRAY
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_SANDSTONE_BEIGE
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_INK_SLATE
+import com.xiaojinzi.tally.lib.res.ui.theme.concrete.*
+import com.xiaojinzi.tally.lib.res.ui.theme.sandstone.*
+import com.xiaojinzi.tally.lib.res.ui.theme.inkslate.*
 import com.xiaojinzi.tally.lib.res.ui.theme.five.TitianRed_md_theme_dark_primary
 import com.xiaojinzi.tally.lib.res.ui.theme.five.TitianRed_md_theme_dark_primaryContainer
 import com.xiaojinzi.tally.lib.res.ui.theme.five.TitianRed_md_theme_dark_secondary
@@ -182,6 +188,60 @@ class ThemeSelectViewModel(
                         lightTertiaryContainer = TitianRed_md_theme_light_tertiaryContainer,
                         darkTertiary = TitianRed_md_theme_dark_tertiary,
                         darkTertiaryContainer = TitianRed_md_theme_dark_tertiaryContainer,
+                    ),
+                    ThemeNormalSelectItemVo(
+                        name = "混凝土灰",
+                        themeName = THEME_NAME_CONCRETE_GRAY,
+                        isSelected = themeName == THEME_NAME_CONCRETE_GRAY,
+                        isNeedVip = false,
+                        lightPrimary = Concrete_md_theme_light_primary,
+                        lightPrimaryContainer = Concrete_md_theme_light_primaryContainer,
+                        darkPrimary = Concrete_md_theme_dark_primary,
+                        darkPrimaryContainer = Concrete_md_theme_dark_primaryContainer,
+                        lightSecondary = Concrete_md_theme_light_secondary,
+                        lightSecondaryContainer = Concrete_md_theme_light_secondaryContainer,
+                        darkSecondary = Concrete_md_theme_dark_secondary,
+                        darkSecondaryContainer = Concrete_md_theme_dark_secondaryContainer,
+                        lightTertiary = Concrete_md_theme_light_tertiary,
+                        lightTertiaryContainer = Concrete_md_theme_light_tertiaryContainer,
+                        darkTertiary = Concrete_md_theme_dark_tertiary,
+                        darkTertiaryContainer = Concrete_md_theme_dark_tertiaryContainer,
+                    ),
+                    ThemeNormalSelectItemVo(
+                        name = "暖砂米白",
+                        themeName = THEME_NAME_SANDSTONE_BEIGE,
+                        isSelected = themeName == THEME_NAME_SANDSTONE_BEIGE,
+                        isNeedVip = false,
+                        lightPrimary = Sandstone_md_theme_light_primary,
+                        lightPrimaryContainer = Sandstone_md_theme_light_primaryContainer,
+                        darkPrimary = Sandstone_md_theme_dark_primary,
+                        darkPrimaryContainer = Sandstone_md_theme_dark_primaryContainer,
+                        lightSecondary = Sandstone_md_theme_light_secondary,
+                        lightSecondaryContainer = Sandstone_md_theme_light_secondaryContainer,
+                        darkSecondary = Sandstone_md_theme_dark_secondary,
+                        darkSecondaryContainer = Sandstone_md_theme_dark_secondaryContainer,
+                        lightTertiary = Sandstone_md_theme_light_tertiary,
+                        lightTertiaryContainer = Sandstone_md_theme_light_tertiaryContainer,
+                        darkTertiary = Sandstone_md_theme_dark_tertiary,
+                        darkTertiaryContainer = Sandstone_md_theme_dark_tertiaryContainer,
+                    ),
+                    ThemeNormalSelectItemVo(
+                        name = "墨蓝石板",
+                        themeName = THEME_NAME_INK_SLATE,
+                        isSelected = themeName == THEME_NAME_INK_SLATE,
+                        isNeedVip = false,
+                        lightPrimary = InkSlate_md_theme_light_primary,
+                        lightPrimaryContainer = InkSlate_md_theme_light_primaryContainer,
+                        darkPrimary = InkSlate_md_theme_dark_primary,
+                        darkPrimaryContainer = InkSlate_md_theme_dark_primaryContainer,
+                        lightSecondary = InkSlate_md_theme_light_secondary,
+                        lightSecondaryContainer = InkSlate_md_theme_light_secondaryContainer,
+                        darkSecondary = InkSlate_md_theme_dark_secondary,
+                        darkSecondaryContainer = InkSlate_md_theme_dark_secondaryContainer,
+                        lightTertiary = InkSlate_md_theme_light_tertiary,
+                        lightTertiaryContainer = InkSlate_md_theme_light_tertiaryContainer,
+                        darkTertiary = InkSlate_md_theme_dark_tertiary,
+                        darkTertiaryContainer = InkSlate_md_theme_dark_tertiaryContainer,
                     ),
                 ).run {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

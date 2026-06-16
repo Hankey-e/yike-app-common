@@ -170,7 +170,7 @@ private fun CommonBillListHeaderItemView(
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @Composable
-private fun CommonBillListNormalItemView(
+fun CommonBillListNormalItemView(
     modifier: Modifier = Modifier,
     normalItem: CommonBillListNormalItemVo? = null,
     showBookInfo: Boolean = false,

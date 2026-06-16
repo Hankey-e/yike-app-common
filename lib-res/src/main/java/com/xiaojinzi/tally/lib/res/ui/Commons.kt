@@ -41,6 +41,11 @@ const val THEME_NAME_SCHENBRUNN_YELLOW = "SchenbrunnYellow"
 const val THEME_NAME_TITIAN_RED = "TitianRed"
 const val THEME_NAME_CUSTOM1 = "Custom1"
 
+// 简约建筑风主题
+const val THEME_NAME_CONCRETE_GRAY = "ConcreteGray"
+const val THEME_NAME_SANDSTONE_BEIGE = "SandstoneBeige"
+const val THEME_NAME_INK_SLATE = "InkSlate"
+
 val AppBackgroundColor: Color
     @Composable
     get() = MaterialTheme.colorScheme.surfaceColorAtElevation(
