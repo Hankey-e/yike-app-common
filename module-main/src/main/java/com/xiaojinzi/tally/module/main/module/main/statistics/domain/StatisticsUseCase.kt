@@ -93,6 +93,13 @@ sealed class StatisticsIntent {
         @UiContext val context: Context,
     ) : StatisticsIntent()
 
+    // 点击某个分类, 跳转到该分类在当前统计周期(月/年)内的账单列表
+    data class ToCategoryBillList(
+        @UiContext val context: Context,
+        val categoryIdList: List<String>,
+        val title: StringItemDto?,
+    ) : StatisticsIntent()
+
 }
 
 @ViewModelLayer
@@ -831,6 +838,33 @@ class StatisticsUseCaseImpl(
                     bookIdList = listOf(
                         currentBookInfo.id,
                     ),
+                    startTimeInclude = timeRange.first,
+                    endTimeInclude = timeRange.second,
+                ),
+            )
+    }
+
+    @IntentProcess
+    private suspend fun toCategoryBillList(intent: StatisticsIntent.ToCategoryBillList) {
+        val currentBookInfo = AppServices.tallyDataSourceSpi.selectedBookStateOb.firstOrNull()
+            ?: throw NoBookSelectException()
+        val selectTime = timeSelectUseCase.currentTimeStateOb.first()
+        val timeTypeSelected = timeTypeSelectedStateOb.first()
+        // 与统计页当前选中的周期保持一致, 避免列表混入其它月份/年份的账单
+        val timeRange = when (timeTypeSelected) {
+            StatisticsUseCase.TimeType.Month -> getMonthInterval(timeStamp = selectTime)
+            StatisticsUseCase.TimeType.Year -> getYearInterval(timeStamp = selectTime)
+        }
+        AppRouterCoreApi::class
+            .routeApi()
+            .toBillListView(
+                context = intent.context,
+                title = intent.title,
+                question = TallyDataSourceSpi.Companion.BillQueryConditionDto(
+                    bookIdList = listOf(
+                        currentBookInfo.id,
+                    ),
+                    categoryIdList = intent.categoryIdList,
                     startTimeInclude = timeRange.first,
                     endTimeInclude = timeRange.second,
                 ),

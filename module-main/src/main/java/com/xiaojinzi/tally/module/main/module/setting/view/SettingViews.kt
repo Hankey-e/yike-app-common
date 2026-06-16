@@ -214,6 +214,19 @@ private fun SettingView(
                 )
             }
         }
+        // 选择保存位置后, 触发导出意图
+        val csvExportLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.CreateDocument("text/csv"),
+        ) { uri ->
+            uri?.let {
+                vm.addIntent(
+                    intent = SettingIntent.ExportCsv(
+                        context = context,
+                        uri = it,
+                    )
+                )
+            }
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -246,17 +259,6 @@ private fun SettingView(
                     .wrapContentHeight()
                     .nothing(),
             ) {
-                SettingSwitchView1(
-                    image = com.xiaojinzi.tally.lib.res.R.drawable.res_robot1.toLocalImageItemDto(),
-                    title = "优先 AI 记账".toStringItemDto(),
-                    value = isAiBillFirst,
-                ) {
-                    AppServices
-                        .appConfigSpi
-                        .switchAiBillFirst(
-                            b = it,
-                        )
-                }
                 SettingSwitchView1(
                     image = com.xiaojinzi.tally.lib.res.R.drawable.res_clock1.toLocalImageItemDto(),
                     title = "记账精确到时分".toStringItemDto(),
@@ -301,26 +303,6 @@ private fun SettingView(
                     .nothing(),
             ) {
                 SettingActionView1(
-                    image = com.xiaojinzi.tally.lib.res.R.drawable.res_update1.toLocalImageItemDto(),
-                    title = "检查更新".toStringItemDto(),
-                ) {
-                    vm.addIntent(
-                        intent = SettingIntent.CheckUpdate(
-                            context = context,
-                        )
-                    )
-                }
-                SettingActionView1(
-                    image = com.xiaojinzi.tally.lib.res.R.drawable.res_tip1.toLocalImageItemDto(),
-                    title = "意见反馈".toStringItemDto(),
-                ) {
-                    vm.addIntent(
-                        intent = SettingIntent.Feedback(
-                            context = context,
-                        )
-                    )
-                }
-                SettingActionView1(
                     image = com.xiaojinzi.tally.lib.res.R.drawable.res_upload1.toLocalImageItemDto(),
                     title = "导入CSV账单".toStringItemDto(),
                 ) {
@@ -328,14 +310,10 @@ private fun SettingView(
                     csvImportLauncher.launch(arrayOf("*/*"))
                 }
                 SettingActionView1(
-                    image = com.xiaojinzi.tally.lib.res.R.drawable.res_warn1.toLocalImageItemDto(),
-                    title = "关于我们".toStringItemDto(),
+                    image = com.xiaojinzi.tally.lib.res.R.drawable.res_backup1.toLocalImageItemDto(),
+                    title = "导出CSV账单".toStringItemDto(),
                 ) {
-                    AppRouterUserApi::class
-                        .routeApi()
-                        .toAboutUsView(
-                            context = context,
-                        )
+                    csvExportLauncher.launch("一刻记账导出.csv")
                 }
             }
 

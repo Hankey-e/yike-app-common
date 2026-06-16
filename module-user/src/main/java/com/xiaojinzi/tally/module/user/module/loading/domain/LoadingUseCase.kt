@@ -18,6 +18,8 @@ import com.xiaojinzi.tally.module.base.support.AppRouterUserApi
 import com.xiaojinzi.tally.module.base.support.AppServices
 import com.xiaojinzi.tally.module.base.support.finishAppAllTask
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -80,11 +82,15 @@ class LoadingUseCaseImpl(
                 delay(800)
                 context.tryFinishActivity()
             } else {
-                // 👉 智能轮询：每隔 100 毫秒看一眼数据库建好没，最多等 30 次（3秒）
-                var retryCount = 0
-                while (!AppServices.tallyDataSourceSpi.isInitData() && retryCount < 30) {
-                    delay(100)
-                    retryCount++
+                // 等数据库初始化完成再进主界面(最多等 5 秒), 避免主界面读数据库时崩溃。
+                // 注意: 不能访问 tallyDataSourceSpi —— 它的构造函数就会读数据库, 未初始化时会直接抛
+                // 「数据库未初始化」。这里改用初始化状态 SPI(它的构造不碰数据库), 等它发出 true。
+                withTimeoutOrNull(timeMillis = 5_000) {
+                    AppServices
+                        .tallyDataSourceInitSpi
+                        .isInitStateOb
+                        .filter { it }
+                        .first()
                 }
 
                 // 去主界面

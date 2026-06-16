@@ -783,15 +783,13 @@ private fun StatisticsPageView(
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .clickable {
-                                AppRouterCoreApi::class
-                                    .routeApi()
-                                    .toBillListView(
+                                vm.addIntent(
+                                    intent = StatisticsIntent.ToCategoryBillList(
                                         context = context,
+                                        categoryIdList = item.categoryIdList,
                                         title = item.categoryName,
-                                        question = TallyDataSourceSpi.Companion.BillQueryConditionDto(
-                                            categoryIdList = item.categoryIdList,
-                                        ),
                                     )
+                                )
                             }
                             .nothing(),
                         item = item,

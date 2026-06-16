@@ -19,12 +19,14 @@ import com.xiaojinzi.tally.lib.res.model.tally.MoneyFen
 import com.xiaojinzi.tally.lib.res.model.tally.TallyBillDto
 import com.xiaojinzi.tally.lib.res.model.tally.TallyBillInsertDto
 import com.xiaojinzi.tally.lib.res.model.tally.TallyCategoryDto
+import com.xiaojinzi.tally.module.base.spi.TallyDataSourceSpi
 import com.xiaojinzi.tally.module.base.support.AppRouterMainApi
 import com.xiaojinzi.tally.module.base.support.AppRouterUserApi
 import com.xiaojinzi.tally.module.base.support.AppServices
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import kotlin.math.absoluteValue
 import kotlin.math.roundToLong
@@ -50,6 +52,11 @@ sealed class SettingIntent {
     ) : SettingIntent()
 
     data class ImportCsv(
+        @UiContext val context: Context,
+        val uri: Uri,
+    ) : SettingIntent()
+
+    data class ExportCsv(
         @UiContext val context: Context,
         val uri: Uri,
     ) : SettingIntent()
@@ -143,11 +150,22 @@ class SettingUseCaseImpl(
     private suspend fun importCsv(intent: SettingIntent.ImportCsv) {
         showLoading()
         try {
-            // 鲨鱼记账导出的 CSV 为 GBK 编码
+            // 自动识别编码: UTF-8 BOM(本应用导出) → UTF-8; 否则按 GBK(鲨鱼记账导出)
             val text = withContext(Dispatchers.IO) {
                 intent.context.contentResolver
                     .openInputStream(intent.uri)
-                    ?.use { it.readBytes().toString(charset = charset("GBK")) }
+                    ?.use { input ->
+                        val bytes = input.readBytes()
+                        val hasUtf8Bom = bytes.size >= 3 &&
+                                bytes[0] == 0xEF.toByte() &&
+                                bytes[1] == 0xBB.toByte() &&
+                                bytes[2] == 0xBF.toByte()
+                        if (hasUtf8Bom) {
+                            String(bytes, 3, bytes.size - 3, charset("UTF-8"))
+                        } else {
+                            String(bytes, charset("GBK"))
+                        }
+                    }
             }
             if (text.isNullOrBlank()) {
                 tip(content = "无法读取文件内容".toStringItemDto())
@@ -245,6 +263,71 @@ class SettingUseCaseImpl(
         } finally {
             hideLoading()
         }
+    }
+
+    /**
+     * 导出当前账本的账单为 CSV(列: 日期,收支类型,类别,金额,备注), 与导入格式兼容。
+     * 采用 UTF-8 BOM 编码, 方便 Excel 正确识别中文。
+     */
+    @IntentProcess
+    private suspend fun exportCsv(intent: SettingIntent.ExportCsv) {
+        showLoading()
+        try {
+            val tallyDataSourceSpi = AppServices.tallyDataSourceSpi
+            val currentBookInfo = tallyDataSourceSpi.requiredSelectedBookInfo()
+            val billList = tallyDataSourceSpi.getBillDetailListByCondition(
+                queryCondition = TallyDataSourceSpi.Companion.BillQueryConditionDto(
+                    bookIdList = listOf(currentBookInfo.id),
+                ),
+            )
+            if (billList.isEmpty()) {
+                tip(content = "当前账本没有可导出的账单".toStringItemDto())
+                return
+            }
+
+            val dateFormat = SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA)
+            val csv = buildString {
+                append("\"日期\",\"收支类型\",\"类别\",\"金额\",\"备注\"\r\n")
+                billList.forEach { detail ->
+                    val absFen = detail.core.amount.value.absoluteValue
+                    val isSpending = detail.core.amount.value < 0
+                    val amountStr = if (absFen % 100L == 0L) {
+                        (absFen / 100L).toString()
+                    } else {
+                        String.format(Locale.US, "%.2f", absFen / 100.0)
+                    }
+                    val date = dateFormat.format(Date(detail.core.time))
+                    val type = if (isSpending) "支出" else "收入"
+                    val category = csvEscape(detail.categoryAdapter?.name.orEmpty())
+                    val note = csvEscape(detail.core.note.orEmpty())
+                    append("\"").append(date)
+                        .append("\",\"").append(type)
+                        .append("\",\"").append(category)
+                        .append("\",\"").append(amountStr)
+                        .append("\",\"").append(note)
+                        .append("\"\r\n")
+                }
+            }
+
+            withContext(Dispatchers.IO) {
+                intent.context.contentResolver.openOutputStream(intent.uri)?.use { os ->
+                    // UTF-8 BOM
+                    os.write(byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte()))
+                    os.write(csv.toByteArray(charset = charset("UTF-8")))
+                    os.flush()
+                }
+            }
+            tip(content = "成功导出 ${billList.size} 条账单".toStringItemDto())
+        } finally {
+            hideLoading()
+        }
+    }
+
+    /**
+     * CSV 字段转义: 内部的双引号需要翻倍
+     */
+    private fun csvEscape(value: String): String {
+        return value.replace(oldValue = "\"", newValue = "\"\"")
     }
 
     /**

@@ -867,35 +867,7 @@ fun MyView(
                             context = context,
                         )
                 }
-                MyItemActionView2(
-                    image = R.drawable.res_share1.toLocalImageItemDto(),
-                    title = "分享给好友".toStringItemDto(),
-                ) {
-                    if (AppServices.appInfoSpi.forOpenSource) {
-                        val officialUrl = AppServices.appInfoSpi.officialUrl
-                        // 通过 Intent.createChooser 发起一个系统分享
-                        val intent = Intent(Intent.ACTION_SEND)
-                        intent.type = "text/plain"
-                        intent.putExtra(Intent.EXTRA_TEXT, officialUrl)
-                        context.startActivity(Intent.createChooser(intent, "分享到"))
-                    } else {
-                        AppRouterMainApi::class
-                            .routeApi()
-                            .toAppShareView(
-                                context = context,
-                            )
-                    }
-                }
-                MyItemActionView2(
-                    image = R.drawable.res_like1.toLocalImageItemDto(),
-                    title = "给一刻记账好评".toStringItemDto(),
-                ) {
-                    AppRouterSystemApi::class
-                        .routeApi()
-                        .toSystemAppMarket(
-                            context = context,
-                        )
-                }
+                // 仅个人使用, 已移除「分享给好友」「给一刻记账好评」等上架相关入口
                 MyItemActionView2(
                     image = R.drawable.res_setting1.toLocalImageItemDto(),
                     title = "设置".toStringItemDto(),

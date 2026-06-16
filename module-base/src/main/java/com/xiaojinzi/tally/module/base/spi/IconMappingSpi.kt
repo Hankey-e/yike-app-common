@@ -831,6 +831,56 @@ interface IconMappingSpi {
             rsd = R.drawable.res_tissue2,
         )
 
+        val Coffee1 = IconMappingDto(
+            name = "coffee1",
+            rsd = R.drawable.res_coffee1,
+        )
+
+        val MilkTea1 = IconMappingDto(
+            name = "milkTea1",
+            rsd = R.drawable.res_milk_tea1,
+        )
+
+        val Cake1 = IconMappingDto(
+            name = "cake1",
+            rsd = R.drawable.res_cake1,
+        )
+
+        val Beer1 = IconMappingDto(
+            name = "beer1",
+            rsd = R.drawable.res_beer1,
+        )
+
+        val Cat1 = IconMappingDto(
+            name = "cat1",
+            rsd = R.drawable.res_cat1,
+        )
+
+        val Umbrella1 = IconMappingDto(
+            name = "umbrella1",
+            rsd = R.drawable.res_umbrella1,
+        )
+
+        val Basketball1 = IconMappingDto(
+            name = "basketball1",
+            rsd = R.drawable.res_basketball1,
+        )
+
+        val Pill1 = IconMappingDto(
+            name = "pill1",
+            rsd = R.drawable.res_pill1,
+        )
+
+        val Key1 = IconMappingDto(
+            name = "key1",
+            rsd = R.drawable.res_key1,
+        )
+
+        val Flower1 = IconMappingDto(
+            name = "flower1",
+            rsd = R.drawable.res_flower1,
+        )
+
         /**
          * Key 是 [IconMappingDto.name]
          * value 是 [IconMappingDto]
@@ -999,6 +1049,16 @@ interface IconMappingSpi {
             Paint1,
             Tissue1,
             Tissue2,
+            Coffee1,
+            MilkTea1,
+            Cake1,
+            Beer1,
+            Cat1,
+            Umbrella1,
+            Basketball1,
+            Pill1,
+            Key1,
+            Flower1,
         ).associateBy { it.name }
 
     }

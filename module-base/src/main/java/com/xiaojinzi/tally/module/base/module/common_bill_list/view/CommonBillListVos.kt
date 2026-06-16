@@ -34,6 +34,8 @@ data class CommonBillListNormalItemVo(
     val bookName: StringItemDto?,
     val categoryIcon: LocalImageItemDto?,
     val categoryName: StringItemDto?,
+    // 备注(这笔账的详细说明), 列表条目优先展示
+    val note: String? = null,
     val accountName: StringItemDto?,
     val transferTargetAccountName: StringItemDto?,
     val labelNameList: List<String>,
@@ -60,6 +62,7 @@ fun TallyBillDetailDto.toCommonBillListNormalItemVo(
         bookName = this.book?.name?.toStringItemDto(),
         categoryIcon = AppServices.iconMappingSpi[this.categoryAdapter?.iconName]?.toLocalImageItemDto(),
         categoryName = categoryAdapter?.name?.toStringItemDto(),
+        note = this.core.note.orNull(),
         accountName = this.account?.getAdapter?.name?.toStringItemDto(),
         transferTargetAccountName = this.transferTargetAccount?.getAdapter?.name?.toStringItemDto(),
         labelNameList = this.labelList.filter { !it.isDeleted }.mapNotNull { it.name.orNull() },

@@ -739,6 +739,66 @@ class IconSelectUseCaseImpl(
             )
         ),
         IconSelectItemGroupUseCaseDto(
+            name = "饮品甜点",
+            list = listOf(
+                IconSelectItemUseCaseDto(
+                    name = "咖啡",
+                    iconRsd = IconMappingSpi.IconMapping.Coffee1.rsd,
+                    iconName = IconMappingSpi.IconMapping.Coffee1.name,
+                ),
+                IconSelectItemUseCaseDto(
+                    name = "奶茶",
+                    iconRsd = IconMappingSpi.IconMapping.MilkTea1.rsd,
+                    iconName = IconMappingSpi.IconMapping.MilkTea1.name,
+                ),
+                IconSelectItemUseCaseDto(
+                    name = "蛋糕",
+                    iconRsd = IconMappingSpi.IconMapping.Cake1.rsd,
+                    iconName = IconMappingSpi.IconMapping.Cake1.name,
+                ),
+                IconSelectItemUseCaseDto(
+                    name = "啤酒",
+                    iconRsd = IconMappingSpi.IconMapping.Beer1.rsd,
+                    iconName = IconMappingSpi.IconMapping.Beer1.name,
+                ),
+            )
+        ),
+        IconSelectItemGroupUseCaseDto(
+            name = "生活休闲",
+            list = listOf(
+                IconSelectItemUseCaseDto(
+                    name = "猫",
+                    iconRsd = IconMappingSpi.IconMapping.Cat1.rsd,
+                    iconName = IconMappingSpi.IconMapping.Cat1.name,
+                ),
+                IconSelectItemUseCaseDto(
+                    name = "雨伞",
+                    iconRsd = IconMappingSpi.IconMapping.Umbrella1.rsd,
+                    iconName = IconMappingSpi.IconMapping.Umbrella1.name,
+                ),
+                IconSelectItemUseCaseDto(
+                    name = "篮球/运动",
+                    iconRsd = IconMappingSpi.IconMapping.Basketball1.rsd,
+                    iconName = IconMappingSpi.IconMapping.Basketball1.name,
+                ),
+                IconSelectItemUseCaseDto(
+                    name = "药片",
+                    iconRsd = IconMappingSpi.IconMapping.Pill1.rsd,
+                    iconName = IconMappingSpi.IconMapping.Pill1.name,
+                ),
+                IconSelectItemUseCaseDto(
+                    name = "钥匙/房租",
+                    iconRsd = IconMappingSpi.IconMapping.Key1.rsd,
+                    iconName = IconMappingSpi.IconMapping.Key1.name,
+                ),
+                IconSelectItemUseCaseDto(
+                    name = "鲜花",
+                    iconRsd = IconMappingSpi.IconMapping.Flower1.rsd,
+                    iconName = IconMappingSpi.IconMapping.Flower1.name,
+                ),
+            )
+        ),
+        IconSelectItemGroupUseCaseDto(
             name = "其他",
             list = listOf(
                 IconSelectItemUseCaseDto(

@@ -251,10 +251,15 @@ private fun CommonBillListNormalItemView(
                     text = when (normalItem?.type) {
                         TallyBillDto.Type.NORMAL,
                         TallyBillDto.Type.REFUND -> {
+                            // 优先展示备注; 没有备注时回退到类别名
                             normalItem
-                                .categoryName
-                                ?.contentWithComposable()
-                                .orNull() ?: "无类别"
+                                .note
+                                .orNull()
+                                ?: normalItem
+                                    .categoryName
+                                    ?.contentWithComposable()
+                                    .orNull()
+                                ?: "无类别"
                         }
 
                         TallyBillDto.Type.TRANSFER -> {
