@@ -35,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 @ServiceAnno(UserSpi::class)
@@ -76,14 +77,8 @@ class UserSpiImpl : UserSpi {
             def = null,
         )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override val isVipStateOb = vipInfoStateOb
-        .flatMapLatest { vipInfo ->
-            tickerFlow(period = 60 * 1000)
-                .map {
-                    (vipInfo?.expiredTime ?: 0) > System.currentTimeMillis()
-                }
-        }
+    // 已移除 VIP 限制: 所有功能默认解锁, isVip 恒为 true
+    override val isVipStateOb = flowOf(true)
 
     @OptIn(
         InternalCoroutinesApi::class,

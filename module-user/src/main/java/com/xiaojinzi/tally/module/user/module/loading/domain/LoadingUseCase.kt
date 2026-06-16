@@ -80,6 +80,13 @@ class LoadingUseCaseImpl(
                 delay(800)
                 context.tryFinishActivity()
             } else {
+                // 👉 智能轮询：每隔 100 毫秒看一眼数据库建好没，最多等 30 次（3秒）
+                var retryCount = 0
+                while (!AppServices.tallyDataSourceSpi.isInitData() && retryCount < 30) {
+                    delay(100)
+                    retryCount++
+                }
+
                 // 去主界面
                 AppRouterMainApi::class
                     .routeApi()

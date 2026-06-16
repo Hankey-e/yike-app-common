@@ -1,6 +1,8 @@
 package com.xiaojinzi.tally.module.main.module.setting.view
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -199,6 +201,19 @@ private fun SettingView(
     BusinessContentView<SettingViewModel>(
         needInit = needInit,
     ) { vm ->
+        // 选择 CSV 文件后, 触发导入意图
+        val csvImportLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.OpenDocument(),
+        ) { uri ->
+            uri?.let {
+                vm.addIntent(
+                    intent = SettingIntent.ImportCsv(
+                        context = context,
+                        uri = it,
+                    )
+                )
+            }
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -233,7 +248,7 @@ private fun SettingView(
             ) {
                 SettingSwitchView1(
                     image = com.xiaojinzi.tally.lib.res.R.drawable.res_robot1.toLocalImageItemDto(),
-                    title = "优先 AI 记账 (Vip)".toStringItemDto(),
+                    title = "优先 AI 记账".toStringItemDto(),
                     value = isAiBillFirst,
                 ) {
                     AppServices
@@ -304,6 +319,13 @@ private fun SettingView(
                             context = context,
                         )
                     )
+                }
+                SettingActionView1(
+                    image = com.xiaojinzi.tally.lib.res.R.drawable.res_upload1.toLocalImageItemDto(),
+                    title = "导入CSV账单".toStringItemDto(),
+                ) {
+                    // 选择任意文件类型, 部分文件管理器会把 .csv 识别为 octet-stream
+                    csvImportLauncher.launch(arrayOf("*/*"))
                 }
                 SettingActionView1(
                     image = com.xiaojinzi.tally.lib.res.R.drawable.res_warn1.toLocalImageItemDto(),

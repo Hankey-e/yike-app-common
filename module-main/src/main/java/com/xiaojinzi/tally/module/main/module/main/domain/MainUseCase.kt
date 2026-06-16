@@ -185,31 +185,7 @@ class MainUseCaseImpl(
          * -. 开启同步
          */
         scope.launchIgnoreError {
-            // 续费提醒
-            val isTipRechargeVip = AppServices
-                .appConfigSpi
-                .isTipBeforeVipExpireStateOb
-                .first()
-            if (isTipRechargeVip) {
-                AppServices
-                    .userSpi
-                    .vipInfoStateOb
-                    .firstOrNull()
-                    ?.let { vipInfo ->
-                        val currentTime = System.currentTimeMillis()
-                        if (vipInfo.expiredTime > currentTime && (vipInfo.expiredTime - currentTime) < 7 * DAY_MS) {
-                            ActivityStack
-                                .topAlive
-                                ?.let { topAct ->
-                                    AppRouterUserApi::class
-                                        .routeApi()
-                                        .toVipExpireRemindView(
-                                            context = topAct,
-                                        )
-                                }
-                        }
-                    }
-            }
+            // VIP 续费提醒已移除
             // 检查更新
             ActivityStack
                 .topAlive

@@ -48,6 +48,9 @@ object TallyDb {
 
     // 使用的之前会被初始化
     private var _database: TallyDatabase? = null
+    // 供外部安全地检查状态，防止直接调用 database 导致崩溃
+    val isInitialized: Boolean
+        get() = _database != null
 
     val database: TallyDatabase
         get() = _database ?: throw NullPointerException("数据库未初始化ø")

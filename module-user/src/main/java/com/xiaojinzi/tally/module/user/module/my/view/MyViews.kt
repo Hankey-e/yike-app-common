@@ -448,6 +448,8 @@ fun MyView(
                     .nothing()
             )
 
+            // VIP 已全员解锁, 升级/会员卡片不再展示
+            if (!isVip) {
             Row(
                 modifier = Modifier
                     .padding(horizontal = APP_PADDING_NORMAL.dp, vertical = 0.dp)
@@ -587,6 +589,8 @@ fun MyView(
                 )
 
             }
+
+            } // 结束 if (!isVip), VIP 卡片不再展示
 
             AppHeightSpace()
 

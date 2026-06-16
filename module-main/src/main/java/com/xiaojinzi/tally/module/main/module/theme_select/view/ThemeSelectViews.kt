@@ -328,19 +328,7 @@ private fun ThemeSelectView(
                                 }
                             }
                         } else {
-                            if (item.isNeedVip) {
-                                Image(
-                                    modifier = Modifier
-                                        .align(alignment = Alignment.BottomEnd)
-                                        .padding(horizontal = 6.dp, vertical = 6.dp)
-                                        .size(size = 16.dp)
-                                        .nothing(),
-                                    painter = painterResource(
-                                        id = com.xiaojinzi.tally.lib.res.R.drawable.res_vip3,
-                                    ),
-                                    contentDescription = null,
-                                )
-                            }
+                            // VIP 已移除, 不再显示主题会员角标
                         }
                     }
 
