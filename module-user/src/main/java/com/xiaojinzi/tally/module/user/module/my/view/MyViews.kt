@@ -279,8 +279,6 @@ fun MyView(
 ) {
     val context = LocalContext.current
     val selfUserInfo by AppServices.userSpi.userInfoStateOb.collectAsState(initial = null)
-    val vipInfo by AppServices.userSpi.vipInfoStateOb.collectAsState(initial = null)
-    val isVip by AppServices.userSpi.isVipStateOb.collectAsState(initial = false)
     BusinessContentView<MyViewModel>(
         modifier = Modifier
             .fillMaxSize()

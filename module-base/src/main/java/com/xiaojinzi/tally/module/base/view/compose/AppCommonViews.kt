@@ -339,113 +339,11 @@ fun AppCommonVipButton(
     isAlertDialog: Boolean = true,
     onClick: () -> Unit = {},
 ) {
-    val context = LocalContext.current
-    val isVip by AppServices.userSpi.isVipStateOb.collectAsState(initial = false)
-    val isVipIntercept = isVipCheck && !isVip
-    var isShowConfirmDialog by remember {
-        mutableStateOf(value = false)
-    }
-    // 去开通 vip 的弹框
-    if (isShowConfirmDialog) {
-        AlertDialog(
-            modifier = Modifier
-                .padding(horizontal = APP_PADDING_SMALL.dp, vertical = 0.dp)
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .nothing(),
-            onDismissRequest = { isShowConfirmDialog = false },
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = APP_PADDING_LARGE.dp, vertical = 0.dp)
-                    .fillMaxWidth()
-                    .clip(
-                        shape = MaterialTheme.shapes.medium,
-                    )
-                    .background(
-                        color = MaterialTheme.colorScheme.surface,
-                    )
-                    .padding(horizontal = APP_PADDING_NORMAL.dp, vertical = APP_PADDING_NORMAL.dp)
-                    .nothing(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(horizontal = 0.dp, vertical = APP_PADDING_NORMAL.dp)
-                        .nothing(),
-                    text = vipTipContent.contentWithComposable(),
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    ),
-                    textAlign = TextAlign.Center,
-                )
-                AppHeightSpace()
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .nothing(),
-                ) {
-                    OutlinedButton(
-                        modifier = Modifier
-                            .weight(weight = 1f, fill = true)
-                            .wrapContentHeight()
-                            .nothing(),
-                        onClick = {
-                            isShowConfirmDialog = false
-                        },
-                    ) {
-                        Text(
-                            text = "朕再想想~",
-                            style = LocalTextStyle.current.copy(
-                                fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                            ),
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                    AppWidthSpace()
-                    Button(
-                        modifier = Modifier
-                            .weight(weight = 1.2f, fill = true)
-                            .wrapContentHeight()
-                            .nothing(),
-                        onClick = {
-                            isShowConfirmDialog = false
-                        },
-                    ) {
-                        Text(
-                            text = "怒开会员",
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-            }
-        }
-    }
+    // VIP 已全员解锁: 作为普通按钮使用
     Button(
         modifier = modifier,
-        onClick = {
-            // VIP 已全员解锁: 直接执行点击
-            onClick.invoke()
-        },
+        onClick = onClick,
     ) {
-        AnimatedVisibility(visible = isVipIntercept) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    modifier = Modifier
-                        .size(size = 24.dp)
-                        .nothing(),
-                    painter = painterResource(
-                        id = com.xiaojinzi.tally.lib.res.R.drawable.res_vip3,
-                    ),
-                    contentDescription = null,
-                )
-                AppWidthSpace()
-            }
-        }
         Text(
             text = text.contentWithComposable(),
             textAlign = TextAlign.Center,
