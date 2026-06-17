@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.annotation.Keep
 import androidx.annotation.UiContext
 import com.xiaojinzi.component.impl.routeApi
+import com.xiaojinzi.component.support.ParameterSupport
+import com.xiaojinzi.tally.lib.res.model.support.DateTimeType
+import com.xiaojinzi.tally.module.base.support.AppRouterBaseApi
 import com.xiaojinzi.reactive.anno.IntentProcess
 import com.xiaojinzi.reactive.template.domain.BusinessMVIUseCase
 import com.xiaojinzi.reactive.template.domain.BusinessMVIUseCaseImpl
@@ -100,6 +103,16 @@ sealed class StatisticsIntent {
         val title: StringItemDto?,
     ) : StatisticsIntent()
 
+    // 自定义时间范围: 选择起始日期
+    data class PickCustomStartTime(
+        @UiContext val context: Context,
+    ) : StatisticsIntent()
+
+    // 自定义时间范围: 选择结束日期
+    data class PickCustomEndTime(
+        @UiContext val context: Context,
+    ) : StatisticsIntent()
+
 }
 
 @ViewModelLayer
@@ -122,7 +135,7 @@ interface StatisticsUseCase : BusinessMVIUseCase {
     enum class TimeType(
         val index: Int,
     ) {
-        Month(index = 0), Year(index = 1),
+        Month(index = 0), Year(index = 1), Custom(index = 2),
     }
 
     companion object {
@@ -154,6 +167,18 @@ interface StatisticsUseCase : BusinessMVIUseCase {
      */
     @StateHotObservable
     val timeTypeSelectedStateOb: MutableSharedStateFlow<TimeType>
+
+    /**
+     * 自定义时间范围的起始时间戳
+     */
+    @StateHotObservable
+    val customStartTimeStateOb: MutableSharedStateFlow<Long>
+
+    /**
+     * 自定义时间范围的结束时间戳
+     */
+    @StateHotObservable
+    val customEndTimeStateOb: MutableSharedStateFlow<Long>
 
     /**
      * 时间区间
@@ -260,11 +285,21 @@ class StatisticsUseCaseImpl(
         initValue = StatisticsUseCase.TimeType.Month,
     )
 
+    override val customStartTimeStateOb = MutableSharedStateFlow(
+        initValue = getMonthInterval(timeStamp = System.currentTimeMillis()).first,
+    )
+
+    override val customEndTimeStateOb = MutableSharedStateFlow(
+        initValue = System.currentTimeMillis(),
+    )
+
     override val timeRangeStateOb = combine(
         timeTypeSelectedStateOb,
         timeSelectUseCase.selectedYearStateOb,
         timeSelectUseCase.selectedMonthStateOb,
-    ) { timeType, year, month ->
+        customStartTimeStateOb,
+        customEndTimeStateOb,
+    ) { timeType, year, month, customStart, customEnd ->
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = 0
         calendar[Calendar.HOUR_OF_DAY] = 0
@@ -278,6 +313,13 @@ class StatisticsUseCaseImpl(
             StatisticsUseCase.TimeType.Month -> getMonthInterval(
                 timeStamp = calendar.timeInMillis,
             )
+
+            // 自定义: 起始日 00:00 ~ 结束日 23:59
+            StatisticsUseCase.TimeType.Custom -> getDayInterval(
+                timeStamp = customStart,
+            ).first to getDayInterval(
+                timeStamp = customEnd,
+            ).second
         }
     }
 
@@ -419,6 +461,9 @@ class StatisticsUseCaseImpl(
                             }
                         }
                     }
+
+                    // 自定义范围不展示趋势折线图
+                    StatisticsUseCase.TimeType.Custom -> emptyList()
                 }.map { timeRange ->
                     StatisticsTendencyItemUseCaseDto(
                         timeRange = timeRange,
@@ -430,6 +475,8 @@ class StatisticsUseCaseImpl(
                             StatisticsUseCase.TimeType.Month -> {
                                 timeRange.first.commonTimeFormat3()
                             }
+
+                            StatisticsUseCase.TimeType.Custom -> ""
                         },
                         amount = AppServices
                             .tallyDataSourceSpi
@@ -502,6 +549,8 @@ class StatisticsUseCaseImpl(
                         }
                     }
             }
+
+            StatisticsUseCase.TimeType.Custom -> emptyList()
         }
     }
 
@@ -789,6 +838,9 @@ class StatisticsUseCaseImpl(
                     )
                 )
             }
+
+            // 自定义模式没有上一个/下一个的概念
+            StatisticsUseCase.TimeType.Custom -> {}
         }
     }
 
@@ -815,6 +867,8 @@ class StatisticsUseCaseImpl(
             StatisticsUseCase.TimeType.Year -> {
                 "${selectYear}年"
             }
+
+            StatisticsUseCase.TimeType.Custom -> "自定义"
         }
         val timeRange = when (timeTypeSelected) {
             StatisticsUseCase.TimeType.Month -> {
@@ -828,6 +882,12 @@ class StatisticsUseCaseImpl(
                     timeStamp = selectTime,
                 )
             }
+
+            StatisticsUseCase.TimeType.Custom -> getDayInterval(
+                timeStamp = customStartTimeStateOb.first(),
+            ).first to getDayInterval(
+                timeStamp = customEndTimeStateOb.first(),
+            ).second
         }
         AppRouterCoreApi::class
             .routeApi()
@@ -854,6 +914,11 @@ class StatisticsUseCaseImpl(
         val timeRange = when (timeTypeSelected) {
             StatisticsUseCase.TimeType.Month -> getMonthInterval(timeStamp = selectTime)
             StatisticsUseCase.TimeType.Year -> getYearInterval(timeStamp = selectTime)
+            StatisticsUseCase.TimeType.Custom -> getDayInterval(
+                timeStamp = customStartTimeStateOb.first(),
+            ).first to getDayInterval(
+                timeStamp = customEndTimeStateOb.first(),
+            ).second
         }
         AppRouterCoreApi::class
             .routeApi()
@@ -875,6 +940,46 @@ class StatisticsUseCaseImpl(
     @IntentProcess
     private suspend fun submit(intent: StatisticsIntent.Submit) {
         // TODO
+    }
+
+    @IntentProcess
+    private suspend fun pickCustomStartTime(intent: StatisticsIntent.PickCustomStartTime) {
+        ParameterSupport.getLong(
+            intent = AppRouterBaseApi::class
+                .routeApi()
+                .dateTimeSelectBySuspend(
+                    context = intent.context,
+                    type = DateTimeType.Day,
+                    time = customStartTimeStateOb.first(),
+                ),
+            key = "data",
+        )?.let { selected ->
+            customStartTimeStateOb.emit(value = selected)
+            // 起始不晚于结束
+            if (selected > customEndTimeStateOb.first()) {
+                customEndTimeStateOb.emit(value = selected)
+            }
+        }
+    }
+
+    @IntentProcess
+    private suspend fun pickCustomEndTime(intent: StatisticsIntent.PickCustomEndTime) {
+        ParameterSupport.getLong(
+            intent = AppRouterBaseApi::class
+                .routeApi()
+                .dateTimeSelectBySuspend(
+                    context = intent.context,
+                    type = DateTimeType.Day,
+                    time = customEndTimeStateOb.first(),
+                ),
+            key = "data",
+        )?.let { selected ->
+            customEndTimeStateOb.emit(value = selected)
+            // 结束不早于起始
+            if (selected < customStartTimeStateOb.first()) {
+                customStartTimeStateOb.emit(value = selected)
+            }
+        }
     }
 
     override fun destroy() {

@@ -14,14 +14,10 @@ import com.xiaojinzi.support.ktx.initOnceUseViewModel
 import com.xiaojinzi.tally.module.base.support.AppRouterConfig
 import com.xiaojinzi.tally.module.base.theme.AppTheme
 import com.xiaojinzi.tally.module.base.view.BaseBusinessAct
-import com.xiaojinzi.tally.module.base.support.interceptor.OpenSourceNotSupportRouterInterceptor
 import kotlinx.coroutines.InternalCoroutinesApi
 
 @RouterAnno(
     hostAndPath = AppRouterConfig.CORE_BILL_CYCLE,
-    interceptors = [
-        OpenSourceNotSupportRouterInterceptor::class,
-    ],
 )
 @ViewLayer
 class BillCycleAct : BaseBusinessAct<BillCycleViewModel>() {

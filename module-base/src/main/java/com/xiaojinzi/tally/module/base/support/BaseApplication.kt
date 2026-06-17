@@ -158,6 +158,10 @@ abstract class BaseApplication : Application() {
                     .appWidgetSpi?.apply {
                         this.startWidgetServiceIfUsed()
                     }
+                // 本地周期记账: 补齐到期未生成的账单
+                kotlin.runCatching {
+                    BillCycleLocalStore.generateDueBills()
+                }
             }
             // 初始化阿里云 OSS
             CommonServices.aliOssSpi?.init(

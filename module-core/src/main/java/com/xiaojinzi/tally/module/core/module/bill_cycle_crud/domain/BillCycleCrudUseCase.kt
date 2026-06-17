@@ -29,6 +29,7 @@ import com.xiaojinzi.tally.lib.res.model.tally.TallyCategoryDto
 import com.xiaojinzi.tally.module.base.support.AppRouterBaseApi
 import com.xiaojinzi.tally.module.base.support.AppRouterCoreApi
 import com.xiaojinzi.tally.module.base.support.AppServices
+import com.xiaojinzi.tally.module.base.support.BillCycleLocalStore
 import com.xiaojinzi.tally.module.base.support.bottomMenuSelectSimple
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -427,7 +428,7 @@ class BillCycleCrudUseCaseImpl(
                     .firstOrNull()?.id,
             )
         } else {
-            val targetBillCycleInfo = AppServices.appNetworkSpi.getBillCycleById(
+            val targetBillCycleInfo = BillCycleLocalStore.getBillCycleById(
                 id = editId
             )
             cycleTypeStateOb.emit(
@@ -833,8 +834,7 @@ class BillCycleCrudUseCaseImpl(
                 content = "确定要删除这个任务吗?".toStringItemDto(),
             )
             withLoading {
-                AppServices
-                    .appNetworkSpi
+                BillCycleLocalStore
                     .deleteBillCycleById(
                         id = editId,
                     )
@@ -877,8 +877,7 @@ class BillCycleCrudUseCaseImpl(
             return
         }
 
-        AppServices
-            .appNetworkSpi
+        BillCycleLocalStore
             .createOrUpdateBillCycle(
                 id = editIdInitData.awaitValue(),
                 bookId = bookId,

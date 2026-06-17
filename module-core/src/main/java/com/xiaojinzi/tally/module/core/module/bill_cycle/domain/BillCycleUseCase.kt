@@ -20,6 +20,7 @@ import com.xiaojinzi.tally.lib.res.model.tally.BillCycleResDto
 import com.xiaojinzi.tally.module.base.support.AppRouterBaseApi
 import com.xiaojinzi.tally.module.base.support.AppRouterCoreApi
 import com.xiaojinzi.tally.module.base.support.AppServices
+import com.xiaojinzi.tally.module.base.support.BillCycleLocalStore
 import com.xiaojinzi.tally.module.base.support.bottomMenuSelect
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
@@ -77,8 +78,7 @@ class BillCycleUseCaseImpl(
     override suspend fun initData() {
         super.initData()
         cycleListStateOb.emit(
-            value = AppServices
-                .appNetworkSpi
+            value = BillCycleLocalStore
                 .getBillCycleList(),
         )
     }
@@ -88,8 +88,7 @@ class BillCycleUseCaseImpl(
     private suspend fun stateToggle(intent: BillCycleIntent.StateToggle) {
         val dataList = cycleListStateOb.first()
         dataList.find { it.id == intent.id }?.let { targetItem ->
-            AppServices
-                .appNetworkSpi
+            BillCycleLocalStore
                 .setBillCycleState(
                     id = intent.id,
                     state = when (targetItem.state) {
@@ -115,8 +114,7 @@ class BillCycleUseCaseImpl(
     @BusinessMVIUseCase.AutoLoading
     private suspend fun runOnce(intent: BillCycleIntent.RunOnce) {
         val dataList = cycleListStateOb.first()
-        val billItemResItem = AppServices
-            .appNetworkSpi
+        val billItemResItem = BillCycleLocalStore
             .runBillCycleOnce(
                 id = intent.id,
             )
@@ -148,8 +146,7 @@ class BillCycleUseCaseImpl(
         confirmDialogOrError(
             content = "确定要删除这个任务吗?".toStringItemDto(),
         )
-        AppServices
-            .appNetworkSpi
+        BillCycleLocalStore
             .deleteBillCycleById(
                 id = intent.id,
             )

@@ -75,19 +75,21 @@ class TallyDataSourceSpiImpl : TallyDataSourceSpi {
 
     override val dataBaseChangedEventOb = dataBaseTablesChangedEventOb.map { }
 
-    override val allBookStateOb = TallyDb
-        .database
-        .bookDao()
-        .all()
-        .map { list ->
-            list
-                .map {
-                    it.toDto()
-                }
-        }
-        .sharedStateIn(
-            scope = AppScope,
-        )
+    override val allBookStateOb by lazy {
+        TallyDb
+            .database
+            .bookDao()
+            .all()
+            .map { list ->
+                list
+                    .map {
+                        it.toDto()
+                    }
+            }
+            .sharedStateIn(
+                scope = AppScope,
+            )
+    }
 
     private val selectedBookIdStateOb = MutableSharedStateFlow<String?>()
         .spPersistence(
@@ -96,83 +98,101 @@ class TallyDataSourceSpiImpl : TallyDataSourceSpi {
             def = null,
         )
 
-    override val selectedBookStateOb = combine(
-        allBookStateOb, selectedBookIdStateOb
-    ) { allBook, selectedBookId ->
-        allBook.find { it.id == selectedBookId }
+    override val selectedBookStateOb by lazy {
+        combine(
+            allBookStateOb, selectedBookIdStateOb
+        ) { allBook, selectedBookId ->
+            allBook.find { it.id == selectedBookId }
+        }
     }
 
-    override val syncSuccessBillCountStateOb = TallyDb
-        .database
-        .billDao()
-        .subscribeBillSyncSuccessCount()
-        .sharedStateIn(
-            scope = AppScope,
-            initValue = 0,
-        )
+    override val syncSuccessBillCountStateOb by lazy {
+        TallyDb
+            .database
+            .billDao()
+            .subscribeBillSyncSuccessCount()
+            .sharedStateIn(
+                scope = AppScope,
+                initValue = 0,
+            )
+    }
 
-    override val syncSuccessBillExcludeDeletedCountStateOb = TallyDb
-        .database
-        .billDao()
-        .subscribeBillSyncSuccessCountExcludeDeleted()
-        .sharedStateIn(
-            scope = AppScope,
-            initValue = 0,
-        )
+    override val syncSuccessBillExcludeDeletedCountStateOb by lazy {
+        TallyDb
+            .database
+            .billDao()
+            .subscribeBillSyncSuccessCountExcludeDeleted()
+            .sharedStateIn(
+                scope = AppScope,
+                initValue = 0,
+            )
+    }
 
-    override val unSyncCategoryCountStateOb = TallyDb
-        .database
-        .categoryDao()
-        .subscribeUnSyncCount()
-        .sharedStateIn(
-            scope = AppScope,
-            initValue = 0,
-        )
+    override val unSyncCategoryCountStateOb by lazy {
+        TallyDb
+            .database
+            .categoryDao()
+            .subscribeUnSyncCount()
+            .sharedStateIn(
+                scope = AppScope,
+                initValue = 0,
+            )
+    }
 
-    override val unSyncAccountCountStateOb = TallyDb
-        .database
-        .accountDao()
-        .subscribeUnSyncCount()
-        .sharedStateIn(
-            scope = AppScope,
-            initValue = 0,
-        )
+    override val unSyncAccountCountStateOb by lazy {
+        TallyDb
+            .database
+            .accountDao()
+            .subscribeUnSyncCount()
+            .sharedStateIn(
+                scope = AppScope,
+                initValue = 0,
+            )
+    }
 
-    override val unSyncLabelCountStateOb = TallyDb
-        .database
-        .labelDao()
-        .subscribeUnSyncCount()
-        .sharedStateIn(
-            scope = AppScope,
-            initValue = 0,
-        )
+    override val unSyncLabelCountStateOb by lazy {
+        TallyDb
+            .database
+            .labelDao()
+            .subscribeUnSyncCount()
+            .sharedStateIn(
+                scope = AppScope,
+                initValue = 0,
+            )
+    }
 
-    override val unSyncBillLabelCountStateOb = TallyDb
-        .database
-        .billLabelDao()
-        .subscribeUnSyncCount()
-        .sharedStateIn(
-            scope = AppScope,
-            initValue = 0,
-        )
+    override val unSyncBillLabelCountStateOb by lazy {
+        TallyDb
+            .database
+            .billLabelDao()
+            .subscribeUnSyncCount()
+            .sharedStateIn(
+                scope = AppScope,
+                initValue = 0,
+            )
+    }
 
-    override val unSyncBillImageCountStateOb = TallyDb
-        .database
-        .billImageDao()
-        .subscribeUnSyncCount()
-        .sharedStateIn(
-            scope = AppScope,
-            initValue = 0,
-        )
+    override val unSyncBillImageCountStateOb by lazy {
+        TallyDb
+            .database
+            .billImageDao()
+            .subscribeUnSyncCount()
+            .sharedStateIn(
+                scope = AppScope,
+                initValue = 0,
+            )
+    }
 
-    override val unSyncBillCountStateOb = TallyDb
-        .database
-        .billDao()
-        .subscribeUnSyncCount()
-        .sharedStateIn(
-            scope = AppScope,
-            initValue = 0,
-        )
+    override val unSyncBillCountStateOb by lazy {
+        TallyDb
+            .database
+            .billDao()
+            .subscribeUnSyncCount()
+            .sharedStateIn(
+                scope = AppScope,
+                initValue = 0,
+            )
+    }
 
     override suspend fun requiredSelectedBookInfo(): TallyBookDto {
         return selectedBookStateOb.firstOrNull() ?: throw NoBookSelectException()

@@ -864,6 +864,9 @@ private fun StatisticsPageView(
             }
         }
 
+        // 标签为可选功能: 列表为空时整张「标签占比」卡片不展示(方案A)
+        if (labelStatisticsList.isNotEmpty()) {
+
         AppHeightSpace()
 
         Column(
@@ -883,9 +886,6 @@ private fun StatisticsPageView(
         ) {
             var isShowAllLabel by remember {
                 mutableStateOf(value = false)
-            }
-            if (labelStatisticsList.isEmpty()) {
-                AppCommonEmptyDataView()
             }
             labelStatisticsList.forEachIndexed { index, item ->
                 if (index < StatisticsUseCase.CATEGORY_MIN_COUNT || isShowAllLabel) {
@@ -941,6 +941,8 @@ private fun StatisticsPageView(
             }
         }
 
+        } // 标签占比卡片(方案A) if 结束
+
     }
 }
 
@@ -962,6 +964,8 @@ private fun StatisticsView(
         val timeTypeSelected by vm.timeTypeSelectedStateOb.collectAsState(initial = null)
         val selectYear by vm.timeSelectUseCase.selectedYearStateOb.collectAsState(initial = null)
         val selectMonth by vm.timeSelectUseCase.selectedMonthStateOb.collectAsState(initial = null)
+        val customStartTime by vm.customStartTimeStateOb.collectAsState(initial = null)
+        val customEndTime by vm.customEndTimeStateOb.collectAsState(initial = null)
         val tabSelected by vm.tabSelectedStateOb.collectAsState(initial = StatisticsUseCase.Tab.Spending)
         val spendingStatistics by vm.spendingStatisticsStateOb.collectAsState(
             initial = null,
@@ -1092,6 +1096,7 @@ private fun StatisticsView(
                         text = when (timeTypeSelected) {
                             StatisticsUseCase.TimeType.Year -> "年账单"
                             StatisticsUseCase.TimeType.Month -> "月账单"
+                            StatisticsUseCase.TimeType.Custom -> "自定义账单"
                             else -> "账单"
                         },
                         style = MaterialTheme.typography.bodySmall.copy(
@@ -1126,95 +1131,145 @@ private fun StatisticsView(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
 
-                    Icon(
-                        modifier = Modifier
-                            .circleClip()
-                            .background(
-                                color = AppBackgroundColor,
-                            )
-                            .clickable {
-                                vm.addIntent(
-                                    intent = StatisticsIntent.YearOrMonthAdjust(
-                                        value = -1,
-                                    )
-                                )
-                            }
-                            .padding(4.dp)
-                            .size(size = 16.dp)
-                            .nothing(),
-                        painter = painterResource(id = com.xiaojinzi.tally.lib.res.R.drawable.res_left1),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.5f,
-                        ),
-                    )
-
-                    Text(
-                        modifier = Modifier
-                            .weight(weight = 1f, fill = true)
-                            .wrapContentHeight()
-                            .clickableNoRipple {
-                                val dateTimeType = when (timeTypeSelected) {
-                                    StatisticsUseCase.TimeType.Year -> {
-                                        DateTimeType.Year
-                                    }
-
-                                    StatisticsUseCase.TimeType.Month -> {
-                                        DateTimeType.Month
-                                    }
-
-                                    null -> null
-                                }
-                                dateTimeType?.let {
-                                    vm.timeSelectUseCase.addIntent(
-                                        intent = TimeSelectUseCase.Intent.DateTimeSelect(
+                    if (timeTypeSelected == StatisticsUseCase.TimeType.Custom) {
+                        // 自定义: 起始 / 结束 两个日期按钮
+                        Text(
+                            modifier = Modifier
+                                .weight(weight = 1f, fill = true)
+                                .clickableNoRipple {
+                                    vm.addIntent(
+                                        intent = StatisticsIntent.PickCustomStartTime(
                                             context = context,
-                                            dateTimeType = dateTimeType,
                                         )
                                     )
                                 }
-                            }
-                            .padding(horizontal = 0.dp, vertical = 6.dp)
-                            .nothing(),
-                        text = when (timeTypeSelected) {
-                            StatisticsUseCase.TimeType.Month -> {
-                                "${selectYear ?: "----"}年${selectMonth?.plus(1) ?: "---"}月"
-                            }
-
-                            StatisticsUseCase.TimeType.Year -> {
-                                "${selectYear ?: "----"}年"
-                            }
-
-                            else -> ""
-                        },
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurface,
-                        ),
-                        textAlign = TextAlign.Center,
-                    )
-
-                    Icon(
-                        modifier = Modifier
-                            .circleClip()
-                            .background(
-                                color = AppBackgroundColor,
-                            )
-                            .clickable {
-                                vm.addIntent(
-                                    intent = StatisticsIntent.YearOrMonthAdjust(
-                                        value = 1,
+                                .padding(horizontal = 0.dp, vertical = 6.dp)
+                                .nothing(),
+                            text = "起 " + (customStartTime?.let {
+                                java.text.SimpleDateFormat(
+                                    "yyyy/MM/dd",
+                                    java.util.Locale.CHINA,
+                                ).format(java.util.Date(it))
+                            } ?: "--"),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = MaterialTheme.colorScheme.onSurface,
+                            ),
+                            textAlign = TextAlign.Center,
+                        )
+                        Text(
+                            modifier = Modifier
+                                .weight(weight = 1f, fill = true)
+                                .clickableNoRipple {
+                                    vm.addIntent(
+                                        intent = StatisticsIntent.PickCustomEndTime(
+                                            context = context,
+                                        )
                                     )
+                                }
+                                .padding(horizontal = 0.dp, vertical = 6.dp)
+                                .nothing(),
+                            text = "止 " + (customEndTime?.let {
+                                java.text.SimpleDateFormat(
+                                    "yyyy/MM/dd",
+                                    java.util.Locale.CHINA,
+                                ).format(java.util.Date(it))
+                            } ?: "--"),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = MaterialTheme.colorScheme.onSurface,
+                            ),
+                            textAlign = TextAlign.Center,
+                        )
+                    } else {
+                        Icon(
+                            modifier = Modifier
+                                .circleClip()
+                                .background(
+                                    color = AppBackgroundColor,
                                 )
-                            }
-                            .padding(4.dp)
-                            .size(size = 16.dp)
-                            .nothing(),
-                        painter = painterResource(id = com.xiaojinzi.tally.lib.res.R.drawable.res_right1),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.5f,
-                        ),
-                    )
+                                .clickable {
+                                    vm.addIntent(
+                                        intent = StatisticsIntent.YearOrMonthAdjust(
+                                            value = -1,
+                                        )
+                                    )
+                                }
+                                .padding(4.dp)
+                                .size(size = 16.dp)
+                                .nothing(),
+                            painter = painterResource(id = com.xiaojinzi.tally.lib.res.R.drawable.res_left1),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = 0.5f,
+                            ),
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .weight(weight = 1f, fill = true)
+                                .wrapContentHeight()
+                                .clickableNoRipple {
+                                    val dateTimeType = when (timeTypeSelected) {
+                                        StatisticsUseCase.TimeType.Year -> {
+                                            DateTimeType.Year
+                                        }
+
+                                        StatisticsUseCase.TimeType.Month -> {
+                                            DateTimeType.Month
+                                        }
+
+                                        else -> null
+                                    }
+                                    dateTimeType?.let {
+                                        vm.timeSelectUseCase.addIntent(
+                                            intent = TimeSelectUseCase.Intent.DateTimeSelect(
+                                                context = context,
+                                                dateTimeType = dateTimeType,
+                                            )
+                                        )
+                                    }
+                                }
+                                .padding(horizontal = 0.dp, vertical = 6.dp)
+                                .nothing(),
+                            text = when (timeTypeSelected) {
+                                StatisticsUseCase.TimeType.Month -> {
+                                    "${selectYear ?: "----"}年${selectMonth?.plus(1) ?: "---"}月"
+                                }
+
+                                StatisticsUseCase.TimeType.Year -> {
+                                    "${selectYear ?: "----"}年"
+                                }
+
+                                else -> ""
+                            },
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface,
+                            ),
+                            textAlign = TextAlign.Center,
+                        )
+
+                        Icon(
+                            modifier = Modifier
+                                .circleClip()
+                                .background(
+                                    color = AppBackgroundColor,
+                                )
+                                .clickable {
+                                    vm.addIntent(
+                                        intent = StatisticsIntent.YearOrMonthAdjust(
+                                            value = 1,
+                                        )
+                                    )
+                                }
+                                .padding(4.dp)
+                                .size(size = 16.dp)
+                                .nothing(),
+                            painter = painterResource(id = com.xiaojinzi.tally.lib.res.R.drawable.res_right1),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = 0.5f,
+                            ),
+                        )
+                    }
 
                 }
 
@@ -1287,7 +1342,7 @@ private fun StatisticsView(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
 
-                    (0..1).forEach { index ->
+                    (0..2).forEach { index ->
                         val isSelected = timeTypeSelected?.index == index
                         Text(
                             modifier = Modifier
@@ -1298,6 +1353,7 @@ private fun StatisticsView(
                                     vm.timeTypeSelectedStateOb.value = when (index) {
                                         0 -> StatisticsUseCase.TimeType.Month
                                         1 -> StatisticsUseCase.TimeType.Year
+                                        2 -> StatisticsUseCase.TimeType.Custom
                                         else -> notSupportError()
                                     }
                                 }
@@ -1313,6 +1369,7 @@ private fun StatisticsView(
                             text = when (index) {
                                 0 -> "月"
                                 1 -> "年"
+                                2 -> "自定义"
                                 else -> notSupportError()
                             },
                             style = MaterialTheme.typography.labelSmall.copy(

@@ -25,7 +25,9 @@ class StatisticsViewModel(
         .tendencyChatSpendingStatisticsStateOb
         .map { list ->
             val maxValue = list.maxOfOrNull { it.amount.value }?: 0L
-            TendencyChatVo(
+            if (list.isEmpty()) {
+                null
+            } else TendencyChatVo(
                 items = list.map { item ->
                     TendencyChatItemVo(
                         timeRange = item.timeRange,
@@ -49,7 +51,9 @@ class StatisticsViewModel(
         .tendencyChatIncomeStatisticsStateOb
         .map { list ->
             val maxValue = list.maxOfOrNull { it.amount.value }?: 0L
-            TendencyChatVo(
+            if (list.isEmpty()) {
+                null
+            } else TendencyChatVo(
                 items = list.map { item ->
                     TendencyChatItemVo(
                         timeRange = item.timeRange,

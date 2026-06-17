@@ -12,6 +12,7 @@ import com.xiaojinzi.reactive.template.domain.BusinessUseCase
 import com.xiaojinzi.reactive.template.domain.CommonUseCase
 import com.xiaojinzi.reactive.template.domain.CommonUseCaseImpl
 import com.xiaojinzi.support.annotation.ViewModelLayer
+import com.xiaojinzi.support.ktx.getDayInterval
 import com.xiaojinzi.support.ktx.timeAtLeast
 import com.xiaojinzi.support.ktx.toStringItemDto
 import com.xiaojinzi.tally.lib.res.QQ_GROUP_LINK
@@ -182,9 +183,27 @@ class SettingUseCaseImpl(
             val incomeCategories = categoryList
                 .filter { it.type == TallyCategoryDto.Companion.TallyCategoryType.INCOME }
 
+            // 去重: 用已存在账单的 (日期+金额+备注+分类) 指纹集合, 跳过重复导入
+            val dedupKeySet = tallyDataSourceSpi
+                .getBillDetailListByCondition(
+                    queryCondition = TallyDataSourceSpi.Companion.BillQueryConditionDto(
+                        bookIdList = listOf(currentBookInfo.id),
+                    ),
+                )
+                .map { detail ->
+                    billDedupKey(
+                        dayStart = getDayInterval(timeStamp = detail.core.time).first,
+                        amountFen = detail.core.amount.value,
+                        note = detail.core.note,
+                        categoryId = detail.categoryAdapter?.id,
+                    )
+                }
+                .toHashSet()
+
             val dateFormat = SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA)
             val billInsertList = mutableListOf<TallyBillInsertDto>()
             var skipCount = 0
+            var dupCount = 0
 
             // 跳过表头(第一行)
             text.split(Regex(pattern = "\\r?\\n"))
@@ -217,11 +236,24 @@ class SettingUseCaseImpl(
                     val isSpending = typeStr != "收入"
                     // 金额以「分」存储, 支出为负数, 收入为正数
                     val absFen = amountYuan.times(other = 100.0).roundToLong().absoluteValue
+                    val amountFen = if (isSpending) -absFen else absFen
                     val matchedCategory = categoryName?.let {
                         matchCategory(
                             name = it,
                             candidates = if (isSpending) spendingCategories else incomeCategories,
                         )
+                    }
+
+                    // 去重: 与已有账单或本次 CSV 内已处理的行重复则跳过
+                    val dedupKey = billDedupKey(
+                        dayStart = getDayInterval(timeStamp = time).first,
+                        amountFen = amountFen,
+                        note = note,
+                        categoryId = matchedCategory?.id,
+                    )
+                    if (!dedupKeySet.add(dedupKey)) {
+                        dupCount++
+                        return@forEach
                     }
 
                     billInsertList.add(
@@ -232,7 +264,7 @@ class SettingUseCaseImpl(
                             time = time,
                             categoryId = matchedCategory?.id,
                             amount = MoneyFen(
-                                value = if (isSpending) -absFen else absFen,
+                                value = amountFen,
                             ),
                             note = note,
                         )
@@ -240,7 +272,12 @@ class SettingUseCaseImpl(
                 }
 
             if (billInsertList.isEmpty()) {
-                tip(content = "没有可导入的有效数据".toStringItemDto())
+                val emptyTip = if (dupCount > 0) {
+                    "没有新增账单, 跳过 $dupCount 条重复"
+                } else {
+                    "没有可导入的有效数据"
+                }
+                tip(content = emptyTip.toStringItemDto())
                 return
             }
 
@@ -253,16 +290,33 @@ class SettingUseCaseImpl(
                 append("成功导入 ")
                 append(billInsertList.size)
                 append(" 条账单")
-                if (skipCount > 0) {
+                if (dupCount > 0) {
                     append(", 跳过 ")
+                    append(dupCount)
+                    append(" 条重复")
+                }
+                if (skipCount > 0) {
+                    append(", 忽略 ")
                     append(skipCount)
-                    append(" 条")
+                    append(" 条无效")
                 }
             }
             tip(content = tipContent.toStringItemDto())
         } finally {
             hideLoading()
         }
+    }
+
+    /**
+     * 账单去重指纹: 日期(当天0点)+金额(分)+备注+分类
+     */
+    private fun billDedupKey(
+        dayStart: Long,
+        amountFen: Long,
+        note: String?,
+        categoryId: String?,
+    ): String {
+        return "$dayStart|$amountFen|${note.orEmpty()}|${categoryId.orEmpty()}"
     }
 
     /**
