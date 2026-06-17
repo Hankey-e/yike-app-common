@@ -24,8 +24,6 @@ object AppRouterConfig {
     const val USER_LOADING = "$HOST_USER/loading"
     const val USER_LOGIN = "$HOST_USER/login"
     const val USER_MY = "$HOST_USER/my"
-    const val USER_VIP_BUY = "$HOST_USER/vipBuy"
-    const val USER_VIP_EXPIRE_REMIND = "$HOST_USER/vipExpireRemind"
     const val USER_ABOUT_US = "$HOST_USER/aboutUs"
     const val USER_INFO = "$HOST_USER/info"
     const val USER_BIND_PHONE = "$HOST_USER/bindPhone"

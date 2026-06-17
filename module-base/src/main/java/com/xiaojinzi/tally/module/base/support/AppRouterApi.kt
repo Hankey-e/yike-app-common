@@ -407,12 +407,6 @@ interface AppRouterUserApi {
         @UiContext context: Context = app,
     )
 
-    @HostAndPathAnno(value = AppRouterConfig.USER_VIP_BUY)
-    fun toVipBuyView(
-        @UiContext context: Context,
-        @AfterRouteActionAnno action: () -> Unit = {},
-    )
-
     @HostAndPathAnno(value = AppRouterConfig.USER_ABOUT_US)
     fun toAboutUsView(
         @UiContext context: Context,
@@ -421,12 +415,6 @@ interface AppRouterUserApi {
 
     @HostAndPathAnno(value = AppRouterConfig.USER_INFO)
     fun toUserInfoView(
-        @UiContext context: Context,
-        @AfterRouteActionAnno action: () -> Unit = {},
-    )
-
-    @HostAndPathAnno(value = AppRouterConfig.USER_VIP_EXPIRE_REMIND)
-    fun toVipExpireRemindView(
         @UiContext context: Context,
         @AfterRouteActionAnno action: () -> Unit = {},
     )

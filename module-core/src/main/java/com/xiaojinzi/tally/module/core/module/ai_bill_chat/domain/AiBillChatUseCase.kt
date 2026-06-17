@@ -283,16 +283,7 @@ class AiBillChatUseCaseImpl(
                     )
                 }
                 if (isVipException) {
-                    confirmDialogOrError(
-                        content = "AI 试用次数已经用完, 继续使用请开通 Vip".toStringItemDto(),
-                        negative = "朕再想想".toStringItemDto(),
-                        positive = "开通 Vip".toStringItemDto(),
-                    )
-                    AppRouterUserApi::class
-                        .routeApi()
-                        .toVipBuyView(
-                            context = context,
-                        )
+                    tip(content = "AI 试用次数已用完".toStringItemDto())
                 } else {
                     tip(content = "AI 分析失败".toStringItemDto())
                 }

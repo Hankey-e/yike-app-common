@@ -721,21 +721,6 @@ class BillSearchUseCaseImpl(
     private suspend fun doSearch(intent: BillSearchIntent.DoSearch) {
         val isUseAdvancedSearch =  isUseAdvancedSearchStateOb.first()
         val isVip = AppServices.userSpi.isVipStateOb.first()
-        if (isUseAdvancedSearch) {
-            if (!isVip) {
-                if (intent.isVipTip) {
-                    confirmDialogOrError(
-                        content = "高级搜索功能需要 VIP 才能使用\n是否开通 VIP?".toStringItemDto(),
-                    )
-                }
-                AppRouterUserApi::class
-                    .routeApi()
-                    .toVipBuyView(
-                        context = intent.context,
-                    )
-                return
-            }
-        }
         val timeRange = yearSelectRangeTimeStateOb.first()
         val startTime = if (isVip) {
             timeStartStateOb.first()

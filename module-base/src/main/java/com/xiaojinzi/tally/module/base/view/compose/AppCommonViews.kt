@@ -412,11 +412,6 @@ fun AppCommonVipButton(
                             .nothing(),
                         onClick = {
                             isShowConfirmDialog = false
-                            AppRouterUserApi::class
-                                .routeApi()
-                                .toVipBuyView(
-                                    context = context,
-                                )
                         },
                     ) {
                         Text(
@@ -431,19 +426,8 @@ fun AppCommonVipButton(
     Button(
         modifier = modifier,
         onClick = {
-            if (isVipIntercept) {
-                if (isAlertDialog) {
-                    isShowConfirmDialog = true
-                } else {
-                    AppRouterUserApi::class
-                        .routeApi()
-                        .toVipBuyView(
-                            context = context,
-                        )
-                }
-            } else {
-                onClick.invoke()
-            }
+            // VIP 已全员解锁: 直接执行点击
+            onClick.invoke()
         },
     ) {
         AnimatedVisibility(visible = isVipIntercept) {

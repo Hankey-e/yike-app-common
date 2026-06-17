@@ -57,20 +57,6 @@ class ThemeSelectUseCaseImpl(
     @IntentProcess
     @BusinessMVIUseCase.AutoLoading
     private suspend fun themeColorSet(intent: ThemeSelectIntent.ThemeColorSet) {
-        if (intent.isNeedVip) {
-            val isVip = AppServices.userSpi.isVipStateOb.first()
-            if (!isVip) {
-                confirmDialogOrError(
-                    content = "此配色需要开通会员\n去开通会员".toStringItemDto(),
-                )
-                AppRouterUserApi::class
-                    .routeApi()
-                    .toVipBuyView(
-                        context = intent.context,
-                    )
-                return
-            }
-        }
         timeAtLeast(timeMillis = 600) {
             AppServices.appInfoSpi.switchTheme(
                 themeName = intent.themeName,

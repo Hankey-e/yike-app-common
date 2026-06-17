@@ -24,8 +24,6 @@ sealed class MyIntent {
 
     data object Submit : MyIntent()
 
-    data object VipRefresh : MyIntent()
-
     data class Feedback(
         @UiContext val context: Context,
     ) : MyIntent()
@@ -70,19 +68,6 @@ class MyUseCaseImpl(
         .subscribeBillCount(
             queryCondition = TallyDataSourceSpi.Companion.BillQueryConditionDto(),
         )
-
-    @IntentProcess
-    @BusinessMVIUseCase.AutoLoading
-    private suspend fun vipRefresh(intent: MyIntent.VipRefresh) {
-        timeAtLeast (
-            timeMillis = 800L,
-        ){
-            AppServices
-                .userSpi
-                .updateVipInfoAction()
-                .awaitIgnoreException()
-        }
-    }
 
     @IntentProcess
     private suspend fun feedback(intent: MyIntent.Feedback) {
