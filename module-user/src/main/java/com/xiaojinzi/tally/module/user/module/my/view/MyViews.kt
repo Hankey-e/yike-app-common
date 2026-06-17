@@ -685,6 +685,9 @@ fun MyView(
                     )
                     .nothing(),
             ) {
+                // 本软件无需上网, 已关闭数据同步入口
+                @Suppress("KotlinConstantConditions")
+                if (false) {
                 val syncSuccessBillCountExcludeDeleted by AppServices
                     .tallyDataSourceSpi
                     .syncSuccessBillExcludeDeletedCountStateOb
@@ -832,6 +835,7 @@ fun MyView(
                         )
                     }
                 }
+                } // 数据同步 if(false) 结束
 
                 val isVibrate by AppServices.appConfigSpi.isVibrateStateOb.collectAsState(initial = true)
                 MyItemActionView3(
@@ -877,13 +881,6 @@ fun MyView(
                         .toSettingView(
                             context = context,
                         )
-                }
-                if (DevelopHelper.isDevelop) {
-                    MyItemActionView2(
-                        image = R.drawable.res_check1.toLocalImageItemDto(),
-                        title = "去测试界面".toStringItemDto(),
-                    ) {
-                    }
                 }
             }
 

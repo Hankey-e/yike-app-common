@@ -843,19 +843,41 @@ private fun StatisticsPageView(
                     .nothing(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
+                Row(
                     modifier = Modifier
-                        .align(
-                            alignment = Alignment.CenterHorizontally,
-                        )
+                        .fillMaxWidth()
+                        .wrapContentHeight()
                         .nothing(),
-                    text = "标签占比",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    ),
-                    textAlign = TextAlign.Start,
-                )
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(
+                        modifier = Modifier
+                            .width(4.dp)
+                            .height(12.dp)
+                            .circleClip()
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            .nothing(),
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .width(4.dp)
+                            .nothing(),
+                    )
+                    Text(
+                        modifier = Modifier
+                            .weight(weight = 1f, fill = true)
+                            .wrapContentHeight()
+                            .nothing(),
+                        text = "标签占比",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        ),
+                        textAlign = TextAlign.Start,
+                    )
+                }
                 AppHeightSpace()
                 PieChartView(
                     modifier = Modifier
