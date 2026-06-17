@@ -115,7 +115,6 @@ private fun BillSearchConditionView(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val isVip by AppServices.userSpi.isVipStateOb.collectAsState(initial = false)
     val bookInfoList by vm.bookInfoListStateOb.collectAsState(initial = emptyList())
     val categoryInfoList by vm.categoryInfoListStateOb.collectAsState(initial = emptyList())
     val accountInfoList by vm.accountInfoListStateOb.collectAsState(initial = emptyList())
@@ -1046,15 +1045,7 @@ private fun BillSearchConditionView(
                 },
             ) {
                 Text(
-                    text = if (isUseAdvancedSearch) {
-                        if (isVip) {
-                            "确认"
-                        } else {
-                            "升级 Vip"
-                        }
-                    } else {
-                        "确认"
-                    },
+                    text = "确认",
                     textAlign = TextAlign.Start,
                 )
             }

@@ -105,7 +105,6 @@ private fun AiBillChatView(
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val isVip by AppServices.userSpi.isVipStateOb.collectAsState(initial = false)
     BusinessContentView<AiBillChatViewModel>(
         needInit = needInit,
     ) { vm ->
@@ -646,13 +645,7 @@ private fun AiBillChatView(
                                     )
                                     .padding(horizontal = 8.dp, vertical = APP_PADDING_NORMAL.dp)
                                     .nothing(),
-                                text = "哈喽, 欢迎使用 '一刻'  AI 记账小助手, 您可以输入文字内容, 我来帮您归类记录. 比如：打车 100, 早餐 12${
-                                    if (isVip) {
-                                        ""
-                                    } else {
-                                        "\n试用结束需开通 Vip 才能继续使用哦"
-                                    }
-                                }",
+                                text = "哈喽, 欢迎使用 '一刻'  AI 记账小助手, 您可以输入文字内容, 我来帮您归类记录. 比如：打车 100, 早餐 12",
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     // fontWeight = FontWeight(weight = (FontWeight.Normal.weight + FontWeight.Medium.weight) / 2),
                                     fontWeight = FontWeight.Medium,

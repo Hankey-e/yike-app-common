@@ -88,7 +88,6 @@ private fun CalendarView(
 ) {
     val context = LocalContext.current
     val bookSelected by AppServices.tallyDataSourceSpi.selectedBookStateOb.collectAsState(initial = null)
-    val isVip by AppServices.userSpi.isVipStateOb.collectAsState(initial = false)
     BusinessContentView<CalendarViewModel>(
         needInit = needInit,
     ) { vm ->
@@ -402,54 +401,6 @@ private fun CalendarView(
                                             }
                                         }
                                     }
-                                }
-                            }
-                        }
-                        if (!isVip) {
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .background(
-                                        color = MaterialTheme.colorScheme.surface.copy(
-                                            alpha = 0.9f,
-                                        )
-                                    )
-                                    .clickPlaceholder()
-                                    .nothing(),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .wrapContentSize()
-                                        .nothing(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                    Text(
-                                        text = "日历视图\n开通会员立即解锁",
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            color = MaterialTheme.colorScheme.onSurface.copy(
-                                                alpha = 0.8f,
-                                            ),
-                                        ),
-                                        textAlign = TextAlign.Center,
-                                    )
-                                    Spacer(
-                                        modifier = Modifier
-                                            .height(height = 8.dp)
-                                            .nothing()
-                                    )
-                                    AppCommonVipButton(
-                                        modifier = Modifier
-                                            .padding(
-                                                horizontal = (APP_PADDING_NORMAL * 3).dp,
-                                                vertical = 0.dp
-                                            )
-                                            .fillMaxWidth()
-                                            .wrapContentHeight()
-                                            .nothing(),
-                                        text = "了解会员权益".toStringItemDto(),
-                                        isAlertDialog = false,
-                                    )
                                 }
                             }
                         }
