@@ -753,6 +753,9 @@ private fun StatisticsPageView(
 
         }
 
+        // 分类列表为空时整张卡片不展示, 避免出现「空空如也」
+        if (categoryStatisticsList.isNotEmpty()) {
+
         AppHeightSpace()
 
         Column(
@@ -772,9 +775,6 @@ private fun StatisticsPageView(
         ) {
             var isShowAllCategory by remember {
                 mutableStateOf(value = false)
-            }
-            if (categoryStatisticsList.isEmpty()) {
-                AppCommonEmptyDataView()
             }
             categoryStatisticsList.forEachIndexed { index, item ->
                 if (index < StatisticsUseCase.CATEGORY_MIN_COUNT || isShowAllCategory) {
@@ -823,6 +823,8 @@ private fun StatisticsPageView(
                 )
             }
         }
+
+        } // 分类占比卡片 if 结束
 
         labelPieChartVo?.let {
             AppHeightSpace()
@@ -1145,7 +1147,7 @@ private fun StatisticsView(
                                 }
                                 .padding(horizontal = 0.dp, vertical = 6.dp)
                                 .nothing(),
-                            text = "起 " + (customStartTime?.let {
+                            text = "起\n" + (customStartTime?.let {
                                 java.text.SimpleDateFormat(
                                     "yyyy/MM/dd",
                                     java.util.Locale.CHINA,
@@ -1168,7 +1170,7 @@ private fun StatisticsView(
                                 }
                                 .padding(horizontal = 0.dp, vertical = 6.dp)
                                 .nothing(),
-                            text = "止 " + (customEndTime?.let {
+                            text = "止\n" + (customEndTime?.let {
                                 java.text.SimpleDateFormat(
                                     "yyyy/MM/dd",
                                     java.util.Locale.CHINA,
