@@ -46,6 +46,15 @@ const val THEME_NAME_CONCRETE_GRAY = "ConcreteGray"
 const val THEME_NAME_SANDSTONE_BEIGE = "SandstoneBeige"
 const val THEME_NAME_INK_SLATE = "InkSlate"
 
+// 精致典雅风主题
+const val THEME_NAME_AMETHYST = "Amethyst"
+const val THEME_NAME_CELADON = "Celadon"
+const val THEME_NAME_CHAMPAGNE = "Champagne"
+
+// 建筑风主题
+const val THEME_NAME_GLASS_TOWER = "GlassTower"
+const val THEME_NAME_BAUHAUS = "Bauhaus"
+
 val AppBackgroundColor: Color
     @Composable
     get() = MaterialTheme.colorScheme.surfaceColorAtElevation(

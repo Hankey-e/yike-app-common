@@ -71,6 +71,12 @@ interface AppConfigSpi {
     val isHomeBillStatVisibleStateOb: Flow<Boolean>
 
     /**
+     * 本地昵称 (离线 App, 无需登录, 仅用于展示问候语等)
+     */
+    @HotObservable(HotObservable.Pattern.BEHAVIOR, isShared = true)
+    val localNickNameStateOb: MutableSharedStateFlow<String>
+
+    /**
      * 切换状态
      */
     fun switchShowedGuide1(b: Boolean)
@@ -114,6 +120,11 @@ interface AppConfigSpi {
      * 切换状态
      */
     fun switchHomeBillStatVisible(b: Boolean)
+
+    /**
+     * 设置本地昵称
+     */
+    fun switchLocalNickName(name: String)
 
 }
 
@@ -188,6 +199,17 @@ class AppConfigSpiImpl : AppConfigSpi {
             key = "isHomeBillStatVisibleConfig",
             def = true,
         )
+
+    override val localNickNameStateOb = MutableSharedStateFlow<String>()
+        .spPersistence(
+            scope = AppScope,
+            key = "localNickNameConfig",
+            def = "",
+        )
+
+    override fun switchLocalNickName(name: String) {
+        localNickNameStateOb.value = name
+    }
 
     override fun switchShowedGuide1(b: Boolean) {
         isShowedGuide1StateOb.value = b

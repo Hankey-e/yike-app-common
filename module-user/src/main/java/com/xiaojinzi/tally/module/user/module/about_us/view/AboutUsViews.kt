@@ -99,7 +99,7 @@ private fun AboutUsView(
                 modifier = Modifier
                     .wrapContentSize()
                     .nothing(),
-                text = "一刻记账",
+                text = "钱记",
                 fontFamily = FontFamily(Font(com.xiaojinzi.tally.lib.res.R.font.res_font_xdks)),
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = MaterialTheme.colorScheme.onSurface,

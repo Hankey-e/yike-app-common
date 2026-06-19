@@ -86,6 +86,8 @@ import com.xiaojinzi.tally.lib.res.ui.AppWidthSpace
 import com.xiaojinzi.tally.module.base.support.AppImageDefault
 import com.xiaojinzi.tally.module.base.support.AppRouterUserApi
 import com.xiaojinzi.tally.module.base.support.AppServices
+import com.xiaojinzi.tally.module.base.theme.LocalThemeDecoration
+import com.xiaojinzi.tally.module.base.theme.ThemeEmptyIllustration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
@@ -150,16 +152,26 @@ fun AppCommonEmptyDataView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        val composition by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(com.xiaojinzi.tally.lib.res.R.raw.res_empty1)
-        )
-        LottieAnimation(
-            modifier = Modifier
-                .size(size = 150.dp)
-                .nothing(),
-            composition = composition,
-            iterations = LottieConstants.IterateForever,
-        )
+        // 富主题: 优先用主题插画(随主题配色实时绘制), 否则回退默认 Lottie 动画
+        val illustrationStyle = LocalThemeDecoration.current.illustrationStyle
+        if (illustrationStyle != null) {
+            ThemeEmptyIllustration(
+                modifier = Modifier
+                    .size(size = 150.dp)
+                    .nothing(),
+            )
+        } else {
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(com.xiaojinzi.tally.lib.res.R.raw.res_empty1)
+            )
+            LottieAnimation(
+                modifier = Modifier
+                    .size(size = 150.dp)
+                    .nothing(),
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+            )
+        }
         Text(
             text = text.contentWithComposable(),
             style = TextStyle(

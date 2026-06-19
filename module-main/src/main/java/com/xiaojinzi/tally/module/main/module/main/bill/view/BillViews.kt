@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -61,6 +62,8 @@ import com.xiaojinzi.tally.module.base.module.common_bill_list.view.CommonBillLi
 import com.xiaojinzi.tally.module.base.support.AppRouterCoreApi
 import com.xiaojinzi.tally.module.base.support.AppServices
 import com.xiaojinzi.tally.module.base.usecase.TimeSelectUseCase
+import com.xiaojinzi.tally.module.base.theme.LocalThemeDecoration
+import com.xiaojinzi.tally.module.base.theme.ThemeHomeBanner
 import com.xiaojinzi.tally.module.base.view.compose.AppPullRefreshView
 import com.xiaojinzi.tally.module.base.view.compose.AppbarNormalM3
 import com.xiaojinzi.tally.module.main.module.main.bill.domain.BillIntent
@@ -172,7 +175,7 @@ fun BillView(
                             .align(alignment = Alignment.Center)
                             .wrapContentSize()
                             .nothing(),
-                        text = "一刻记账",
+                        text = "钱记",
                         fontFamily = FontFamily(Font(com.xiaojinzi.tally.lib.res.R.font.res_font_xdks)),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Normal,
@@ -201,6 +204,52 @@ fun BillView(
                             tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
+                }
+                // 富主题: 头部问候语 + 装饰插图 (仅在配置了富装饰的主题下显示)
+                val themeDecoration = LocalThemeDecoration.current
+                if (themeDecoration.showGreeting) {
+                    val localNickName by AppServices
+                        .appConfigSpi
+                        .localNickNameStateOb
+                        .collectAsState(initial = "")
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(
+                                horizontal = APP_PADDING_NORMAL.dp,
+                                vertical = APP_PADDING_SMALL.dp,
+                            )
+                            .nothing(),
+                        horizontalAlignment = Alignment.Start,
+                    ) {
+                        Text(
+                            text = "Hi, ${localNickName.takeIf { it.isNotBlank() } ?: "朋友"}",
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            ),
+                            textAlign = TextAlign.Start,
+                        )
+                        Text(
+                            text = "记录每一笔, 生活更有数",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            ),
+                            textAlign = TextAlign.Start,
+                        )
+                    }
+                }
+                themeDecoration.illustrationStyle?.let { style ->
+                    ThemeHomeBanner(
+                        style = style,
+                        modifier = Modifier
+                            .padding(horizontal = APP_PADDING_NORMAL.dp, vertical = 0.dp)
+                            .fillMaxWidth()
+                            .height(height = 120.dp)
+                            .clip(shape = MaterialTheme.shapes.medium)
+                            .nothing(),
+                    )
                 }
                 val initPageIndex = Int.MAX_VALUE / 2
                 val state = rememberPagerState(

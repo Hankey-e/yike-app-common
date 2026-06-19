@@ -793,7 +793,7 @@ fun AiBillChatViewWrap() {
                             .align(alignment = Alignment.Center)
                             .wrapContentSize()
                             .nothing(),
-                        text = "一刻记账",
+                        text = "钱记",
                         fontFamily = FontFamily(Font(com.xiaojinzi.tally.lib.res.R.font.res_font_xdks)),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Normal,

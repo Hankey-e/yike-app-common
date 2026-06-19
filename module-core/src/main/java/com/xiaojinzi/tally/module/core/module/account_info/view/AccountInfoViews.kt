@@ -3,6 +3,7 @@ package com.xiaojinzi.tally.module.core.module.account_info.view
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +58,7 @@ import com.xiaojinzi.tally.lib.res.ui.APP_PADDING_NORMAL
 import com.xiaojinzi.tally.lib.res.ui.AppWidthSpace
 import com.xiaojinzi.tally.module.base.support.AppRouterCoreApi
 import com.xiaojinzi.tally.module.base.support.AppServices
+import com.xiaojinzi.tally.module.base.theme.LocalThemeDecoration
 import com.xiaojinzi.tally.module.base.view.compose.AppCommonEmptyDataView
 import com.xiaojinzi.tally.module.base.view.compose.AppbarNormalM3
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -108,7 +111,25 @@ private fun AccountInfoView(
                     textAssetsValue,
                     textDeptName,
                     textDeptValue,
+                    imageDecor,
                 ) = createRefs()
+
+                // 富主题: 卡片角落水印纹样 (仅在配置了富装饰的主题下显示)
+                LocalThemeDecoration.current.accountCardMotifRsd?.let { motifRsd ->
+                    Image(
+                        modifier = Modifier
+                            .size(size = 64.dp)
+                            .constrainAs(ref = imageDecor) {
+                                this.top.linkTo(anchor = parent.top, margin = 10.dp)
+                                this.end.linkTo(anchor = parent.end, margin = 12.dp)
+                            }
+                            .nothing(),
+                        painter = painterResource(id = motifRsd),
+                        contentDescription = null,
+                        alpha = 0.16f,
+                        colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onSecondary),
+                    )
+                }
 
                 Text(
                     modifier = Modifier

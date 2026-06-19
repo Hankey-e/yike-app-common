@@ -170,7 +170,7 @@ private fun LoginView(
                     modifier = Modifier
                         .wrapContentSize()
                         .nothing(),
-                    text = "一刻记账",
+                    text = "钱记",
                     fontFamily = FontFamily(Font(R.font.res_font_xdks)),
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Normal,

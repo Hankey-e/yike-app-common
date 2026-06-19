@@ -7,6 +7,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -29,9 +31,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +43,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -99,6 +104,13 @@ private fun MainView(
         .isAiBillFirstStateOb
         .collectAsState(
             initial = false
+        )
+    // 离线 App: 本地昵称为空时, 先展示欢迎页引导填写昵称
+    val localNickName by AppServices
+        .appConfigSpi
+        .localNickNameStateOb
+        .collectAsState(
+            initial = "",
         )
     BusinessContentView<MainViewModel>(
         needInit = needInit,
@@ -298,7 +310,7 @@ private fun MainView(
                 }
             }
         }
-        if (!isShowedGuide1) {
+        if (!isShowedGuide1 && localNickName.isNotBlank()) {
             var showIndex by remember {
                 mutableIntStateOf(value = 0)
             }
@@ -452,6 +464,98 @@ private fun MainView(
                     ),
                     textAlign = TextAlign.Center,
                 )
+            }
+        }
+        // 离线 App 欢迎页: 本地昵称为空时全屏展示, 引导填写昵称
+        if (localNickName.isBlank()) {
+            var nickNameInput by remember {
+                mutableStateOf(value = "")
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = AppBackgroundColor)
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 32.dp, vertical = 0.dp)
+                    .nothing(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(size = 200.dp)
+                        .nothing(),
+                    painter = painterResource(
+                        id = com.xiaojinzi.tally.lib.res.R.drawable.res_welcome_hero,
+                    ),
+                    contentDescription = null,
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(height = 24.dp)
+                        .nothing()
+                )
+                Text(
+                    text = "欢迎使用钱记",
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    ),
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(height = 8.dp)
+                        .nothing()
+                )
+                Text(
+                    text = "先取个昵称吧, 让记账更亲切",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(height = 28.dp)
+                        .nothing()
+                )
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .nothing(),
+                    value = nickNameInput,
+                    onValueChange = { nickNameInput = it.take(n = 12) },
+                    singleLine = true,
+                    label = {
+                        Text(text = "昵称")
+                    },
+                    placeholder = {
+                        Text(text = "请输入昵称")
+                    },
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(height = 24.dp)
+                        .nothing()
+                )
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .nothing(),
+                    enabled = nickNameInput.isNotBlank(),
+                    onClick = {
+                        AppServices
+                            .appConfigSpi
+                            .switchLocalNickName(name = nickNameInput.trim())
+                    },
+                ) {
+                    Text(
+                        text = "开始记账",
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
     }

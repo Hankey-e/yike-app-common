@@ -61,7 +61,7 @@ private fun LoadingView() {
                 modifier = Modifier
                     .wrapContentSize()
                     .nothing(),
-                text = "一刻记账",
+                text = "钱记",
                 fontFamily = FontFamily(
                     Font(
                         resId = com.xiaojinzi.tally.lib.res.R.font.res_font_xdks

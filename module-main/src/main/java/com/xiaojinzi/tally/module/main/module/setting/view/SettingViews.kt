@@ -313,58 +313,15 @@ private fun SettingView(
                     image = com.xiaojinzi.tally.lib.res.R.drawable.res_backup1.toLocalImageItemDto(),
                     title = "导出CSV账单".toStringItemDto(),
                 ) {
-                    csvExportLauncher.launch("一刻记账导出.csv")
+                    csvExportLauncher.launch("钱记导出.csv")
                 }
             }
 
-            AppHeightSpace()
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(
-                        color = MaterialTheme.colorScheme.surface,
-                    )
-                    .clickable {
-                        vm.addIntent(
-                            intent = SettingIntent.ToLoginOut(
-                                context = context,
-                            )
-                        )
-                    }
-                    .padding(horizontal = 0.dp, vertical = APP_PADDING_NORMAL.dp)
-                    .nothing(),
-                text = "退出登录",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.error,
-                ),
-                textAlign = TextAlign.Center,
-            )
+            // 离线版: 无需登录, 已移除「退出登录」入口
 
             Spacer(modifier = Modifier.weight(weight = 1f, fill = true))
 
-            Text(
-                modifier = Modifier
-                    .clickableNoRipple {
-                        vm.addIntent(
-                            intent = SettingIntent.ToLogOff(
-                                context = context,
-                            )
-                        )
-                    }
-                    .wrapContentSize()
-                    .padding(horizontal = APP_PADDING_NORMAL.dp, vertical = APP_PADDING_LARGE.dp)
-                    .nothing(),
-                text = "注销账号",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.onBackground.copy(
-                        alpha = 0.8f,
-                    ),
-                ),
-                textAlign = TextAlign.Center,
-            )
+            // 离线版: 无需登录, 已移除「注销账号」入口
 
             Text(
                 modifier = Modifier

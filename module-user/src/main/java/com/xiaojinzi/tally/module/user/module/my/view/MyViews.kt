@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,18 +27,22 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,7 +65,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.xiaojinzi.component.impl.routeApi
 import com.xiaojinzi.reactive.template.view.BusinessContentView
 import com.xiaojinzi.support.bean.StringItemDto
@@ -85,7 +87,6 @@ import com.xiaojinzi.tally.lib.res.ui.AppWidthSpace
 import com.xiaojinzi.tally.module.base.support.AppRouterCoreApi
 import com.xiaojinzi.tally.module.base.support.AppRouterMainApi
 import com.xiaojinzi.tally.module.base.support.AppRouterSystemApi
-import com.xiaojinzi.tally.module.base.support.AppRouterUserApi
 import com.xiaojinzi.tally.module.base.support.AppServices
 import com.xiaojinzi.tally.module.base.support.DevelopHelper
 import com.xiaojinzi.tally.module.base.view.compose.AppbarNormalM3
@@ -278,7 +279,45 @@ fun MyView(
     needInit: Boolean? = false,
 ) {
     val context = LocalContext.current
-    val selfUserInfo by AppServices.userSpi.userInfoStateOb.collectAsState(initial = null)
+    // 离线 App: 本地昵称, 无需登录
+    val localNickName by AppServices.appConfigSpi.localNickNameStateOb.collectAsState(initial = "")
+    var showNickNameDialog by remember { mutableStateOf(value = false) }
+    var nickNameInput by remember { mutableStateOf(value = "") }
+    if (showNickNameDialog) {
+        AlertDialog(
+            onDismissRequest = { showNickNameDialog = false },
+            title = {
+                Text(text = "设置昵称")
+            },
+            text = {
+                OutlinedTextField(
+                    value = nickNameInput,
+                    onValueChange = { nickNameInput = it.take(n = 12) },
+                    singleLine = true,
+                    placeholder = {
+                        Text(text = "请输入昵称")
+                    },
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        AppServices.appConfigSpi.switchLocalNickName(name = nickNameInput.trim())
+                        showNickNameDialog = false
+                    },
+                ) {
+                    Text(text = "确定")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showNickNameDialog = false },
+                ) {
+                    Text(text = "取消")
+                }
+            },
+        )
+    }
     BusinessContentView<MyViewModel>(
         modifier = Modifier
             .fillMaxSize()
@@ -332,39 +371,28 @@ fun MyView(
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .clickableNoRipple {
-                        if (selfUserInfo == null) {
-                            AppRouterUserApi::class
-                                .routeApi()
-                                .toLoginView(
-                                    context = context,
-                                )
-                        } else {
-                            AppRouterUserApi::class
-                                .routeApi()
-                                .toUserInfoView(
-                                    context = context,
-                                )
-                        }
+                        nickNameInput = localNickName
+                        showNickNameDialog = true
                     }
                     .nothing(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
             ) {
-                Image(
-                    modifier = Modifier
-                        .size(size = 48.dp)
-                        .circleClip()
-                        .nothing(),
-                    painter = rememberAsyncImagePainter(model = AppServices.appInfoSpi.appLauncherIconRsd),
-                    contentDescription = null,
-                )
-                AppWidthSpace()
                 Text(
-                    text = selfUserInfo?.name ?: "登录已过期",
+                    text = localNickName.takeIf { it.isNotBlank() } ?: "点击设置昵称",
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                     ),
                     textAlign = TextAlign.Start,
+                )
+                AppWidthSpace()
+                Icon(
+                    modifier = Modifier
+                        .size(size = 16.dp)
+                        .nothing(),
+                    painter = rememberVectorPainter(image = Icons.Rounded.KeyboardArrowRight),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
 
@@ -572,7 +600,7 @@ fun MyView(
                             context = context,
                         )
                 }
-                // 仅个人使用, 已移除「分享给好友」「给一刻记账好评」等上架相关入口
+                // 仅个人使用, 已移除「分享给好友」「给钱记好评」等上架相关入口
                 MyItemActionView2(
                     image = R.drawable.res_setting1.toLocalImageItemDto(),
                     title = "设置".toStringItemDto(),

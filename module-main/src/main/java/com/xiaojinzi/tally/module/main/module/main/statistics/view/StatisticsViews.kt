@@ -80,6 +80,8 @@ import com.xiaojinzi.tally.lib.res.ui.AppWidthSpace
 import com.xiaojinzi.tally.module.base.spi.TallyDataSourceSpi
 import com.xiaojinzi.tally.module.base.support.AppRouterCoreApi
 import com.xiaojinzi.tally.module.base.support.AppServices
+import com.xiaojinzi.tally.module.base.theme.LocalThemeDecoration
+import com.xiaojinzi.tally.module.base.theme.ThemeStatBanner
 import com.xiaojinzi.tally.module.base.usecase.TimeSelectUseCase
 import com.xiaojinzi.tally.module.base.view.compose.AppCommonEmptyDataView
 import com.xiaojinzi.tally.module.base.view.compose.PieChartView
@@ -1130,6 +1132,18 @@ private fun StatisticsView(
                         textAlign = TextAlign.Start,
                     )
                 }
+            }
+
+            // 富主题: 统计页装饰插图 (仅在配置了富装饰的主题下显示)
+            LocalThemeDecoration.current.illustrationStyle?.let {
+                ThemeStatBanner(
+                    modifier = Modifier
+                        .padding(horizontal = APP_PADDING_NORMAL.dp, vertical = APP_PADDING_SMALL.dp)
+                        .fillMaxWidth()
+                        .height(height = 110.dp)
+                        .clip(shape = MaterialTheme.shapes.medium)
+                        .nothing(),
+                )
             }
 
             // 收入支出选择和时间选择

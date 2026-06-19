@@ -122,7 +122,7 @@ private fun PrivacyAgreementView(
                             .nothing()
                     )
                     Text(
-                        text = "一刻记账",
+                        text = "钱记",
                         fontFamily = FontFamily.Serif,
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
@@ -142,7 +142,7 @@ private fun PrivacyAgreementView(
 
             val annotatedString = buildAnnotatedString {
                 this.append(
-                    text = "欢迎使用 一刻记账 App. 我们非常重视您的个人信息和隐私保护. \n为了给您提供更优质的服务, 一刻记账将会使用您的个人信息. ",
+                    text = "欢迎使用 钱记 App. 我们非常重视您的个人信息和隐私保护. \n为了给您提供更优质的服务, 钱记将会使用您的个人信息. ",
                 )
                 this.withStyle(
                     style = SpanStyle(
@@ -165,7 +165,7 @@ private fun PrivacyAgreementView(
                         ),
                     ),
                 ) {
-                    append("《一刻记账用户协议》")
+                    append("《钱记用户协议》")
                 }
                 this.pop()
                 this.withStyle(
@@ -189,7 +189,7 @@ private fun PrivacyAgreementView(
                         ),
                     ),
                 ) {
-                    append("《一刻记账隐私协议》")
+                    append("《钱记隐私协议》")
                 }
                 this.pop()
                 this.withStyle(

@@ -10,7 +10,6 @@ import com.xiaojinzi.reactive.template.domain.CommonUseCase
 import com.xiaojinzi.reactive.template.domain.CommonUseCaseImpl
 import com.xiaojinzi.support.activity_stack.ActivityStack
 import com.xiaojinzi.support.annotation.ViewModelLayer
-import com.xiaojinzi.support.ktx.awaitIgnoreException
 import com.xiaojinzi.support.ktx.tryFinishActivity
 import com.xiaojinzi.tally.lib.res.ui.APP_ACTIVITY_FLAG_MAIN
 import com.xiaojinzi.tally.module.base.support.AppRouterMainApi
@@ -46,62 +45,57 @@ class LoadingUseCaseImpl(
     private suspend fun goNext(
         @UiContext context: Context,
     ) {
-        val currentUserInfo = AppServices
-            .userSpi
-            .userInfoStateOb
-            .firstOrNull()
-        val latestUserId = AppServices
+        var latestUserId = AppServices
             .userSpi
             .latestUserIdStateOb
             .firstOrNull()
-        // 没登录过
-        if (latestUserId == null) {
-            AppRouterUserApi::class
+        // 开源离线版: 没有本地用户时, 静默完成本地登录(等价于登录页原本的自动登录),
+        // 复用同一套 loginByCheckCode -> afterLogin(建立本地用户 + 初始化数据库 + 种子数据),
+        // 从而彻底去掉登录页, 用户进入即用。
+        if (latestUserId.isNullOrBlank()) {
+            kotlin.runCatching {
+                AppServices
+                    .userSpi
+                    .loginByCheckCode(
+                        phoneNumber = "18888888888",
+                        checkCode = "123456",
+                    )
+            }
+            latestUserId = AppServices
+                .userSpi
+                .latestUserIdStateOb
+                .firstOrNull()
+        }
+        // 如果主界面存在, 就关闭当前界面, 否则就启动一个
+        val isMainViewExist = ActivityStack.any {
+            it.hasFlag(
+                flag = APP_ACTIVITY_FLAG_MAIN,
+            )
+        }
+        if (isMainViewExist) {
+            // 不然太快了, 会闪
+            delay(800)
+            context.tryFinishActivity()
+        } else {
+            // 等数据库初始化完成再进主界面(最多等 5 秒), 避免主界面读数据库时崩溃。
+            // 注意: 不能访问 tallyDataSourceSpi —— 它的构造函数就会读数据库, 未初始化时会直接抛
+            // 「数据库未初始化」。这里改用初始化状态 SPI(它的构造不碰数据库), 等它发出 true。
+            withTimeoutOrNull(timeMillis = 5_000) {
+                AppServices
+                    .tallyDataSourceInitSpi
+                    .isInitStateOb
+                    .filter { it }
+                    .first()
+            }
+
+            // 去主界面
+            AppRouterMainApi::class
                 .routeApi()
-                .toLoginView(
+                .toMainView(
                     context = context,
                 ) {
                     context.tryFinishActivity()
                 }
-        } else {
-            currentUserInfo?.let {
-                // 更新 Token 信息
-                AppServices
-                    .userSpi
-                    .updateTokenInfoAction()
-                    .awaitIgnoreException()
-            }
-            // 如果主界面存在, 就关闭当前界面, 否则就启动一个
-            val isMainViewExist = ActivityStack.any {
-                it.hasFlag(
-                    flag = APP_ACTIVITY_FLAG_MAIN,
-                )
-            }
-            if (isMainViewExist) {
-                // 不然太快了, 会闪
-                delay(800)
-                context.tryFinishActivity()
-            } else {
-                // 等数据库初始化完成再进主界面(最多等 5 秒), 避免主界面读数据库时崩溃。
-                // 注意: 不能访问 tallyDataSourceSpi —— 它的构造函数就会读数据库, 未初始化时会直接抛
-                // 「数据库未初始化」。这里改用初始化状态 SPI(它的构造不碰数据库), 等它发出 true。
-                withTimeoutOrNull(timeMillis = 5_000) {
-                    AppServices
-                        .tallyDataSourceInitSpi
-                        .isInitStateOb
-                        .filter { it }
-                        .first()
-                }
-
-                // 去主界面
-                AppRouterMainApi::class
-                    .routeApi()
-                    .toMainView(
-                        context = context,
-                    ) {
-                        context.tryFinishActivity()
-                    }
-            }
         }
     }
 
@@ -127,6 +121,12 @@ class LoadingUseCaseImpl(
                         value = true
                     )
                 }
+            } else {
+                // 开源离线版: 无隐私网关, 直接置为已同意,
+                // 避免 BaseApplication 启动初始化(等待同意隐私协议)被永久阻塞。
+                AppServices.appConfigSpi.isAgreedPrivacyAgreementStateOb.emit(
+                    value = true
+                )
             }
             goNext(
                 context = intent.context,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -20,9 +21,19 @@ import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_TITIAN_RED
 import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_CONCRETE_GRAY
 import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_SANDSTONE_BEIGE
 import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_INK_SLATE
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_AMETHYST
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_CELADON
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_CHAMPAGNE
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_GLASS_TOWER
+import com.xiaojinzi.tally.lib.res.ui.THEME_NAME_BAUHAUS
 import com.xiaojinzi.tally.lib.res.ui.theme.concrete.ConcreteGrayAppTheme
 import com.xiaojinzi.tally.lib.res.ui.theme.sandstone.SandstoneBeigeAppTheme
 import com.xiaojinzi.tally.lib.res.ui.theme.inkslate.InkSlateAppTheme
+import com.xiaojinzi.tally.lib.res.ui.theme.amethyst.AmethystAppTheme
+import com.xiaojinzi.tally.lib.res.ui.theme.celadon.CeladonAppTheme
+import com.xiaojinzi.tally.lib.res.ui.theme.champagne.ChampagneAppTheme
+import com.xiaojinzi.tally.lib.res.ui.theme.glasstower.GlassTowerAppTheme
+import com.xiaojinzi.tally.lib.res.ui.theme.bauhaus.BauhausAppTheme
 import com.xiaojinzi.tally.lib.res.ui.theme.custom1.Custom1AppTheme
 import com.xiaojinzi.tally.lib.res.ui.theme.five.TitianRedAppTheme
 import com.xiaojinzi.tally.lib.res.ui.theme.four.SchenbrunnYellowAppTheme
@@ -69,6 +80,9 @@ fun AppTheme(
         contentAlignment = Alignment.TopCenter,
     ) {
         useDarkThemeAdapter?.let {
+          CompositionLocalProvider(
+              LocalThemeDecoration provides themeDecorationOf(themeName = themeName),
+          ) {
             when (themeName) {
 
                 THEME_NAME_CHINA_RED -> ChinaRedAppTheme(
@@ -111,6 +125,31 @@ fun AppTheme(
                     content = content,
                 )
 
+                THEME_NAME_AMETHYST -> AmethystAppTheme(
+                    useDarkTheme = useDarkThemeAdapter,
+                    content = content,
+                )
+
+                THEME_NAME_CELADON -> CeladonAppTheme(
+                    useDarkTheme = useDarkThemeAdapter,
+                    content = content,
+                )
+
+                THEME_NAME_CHAMPAGNE -> ChampagneAppTheme(
+                    useDarkTheme = useDarkThemeAdapter,
+                    content = content,
+                )
+
+                THEME_NAME_GLASS_TOWER -> GlassTowerAppTheme(
+                    useDarkTheme = useDarkThemeAdapter,
+                    content = content,
+                )
+
+                THEME_NAME_BAUHAUS -> BauhausAppTheme(
+                    useDarkTheme = useDarkThemeAdapter,
+                    content = content,
+                )
+
                 THEME_NAME_FOLLOW_SYSTEM -> OliveGreenDynamicAppTheme(
                     useDarkTheme = useDarkThemeAdapter,
                     content = content,
@@ -127,6 +166,7 @@ fun AppTheme(
                 )
 
             }
+          }
         }
     }
 }

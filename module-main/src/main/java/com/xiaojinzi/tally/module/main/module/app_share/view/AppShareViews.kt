@@ -85,7 +85,7 @@ private fun AppShareView(
                         .wrapContentSize()
                         .padding(horizontal = 0.dp, vertical = APP_PADDING_LARGE.dp)
                         .nothing(),
-                    text = "分享一刻记账",
+                    text = "分享钱记",
                     style = MaterialTheme.typography.titleSmall.copy(
                         color = MaterialTheme.colorScheme.onSurface,
                     ),

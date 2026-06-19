@@ -50,7 +50,7 @@ class AppShareUseCaseImpl(
                         platform = PlatformShareInfoDto.PLATFORM_WX_CHAT,
                         core = ShareInfoDto(
                             shareType = ShareType.Link,
-                            title = "一刻记账".toStringItemDto(),
+                            title = "钱记".toStringItemDto(),
                             description = "一个简约而不简单的记账 App".toStringItemDto(),
                             link = AppServices.appInfoSpi.officialUrl,
                             thumbImageRsd = AppServices.appInfoSpi.appLauncherIconRsd,
@@ -72,7 +72,7 @@ class AppShareUseCaseImpl(
                         platform = PlatformShareInfoDto.PLATFORM_WX_STATE,
                         core = ShareInfoDto(
                             shareType = ShareType.Link,
-                            title = "一刻记账".toStringItemDto(),
+                            title = "钱记".toStringItemDto(),
                             description = "一个简约而不简单的记账 App".toStringItemDto(),
                             link = AppServices.appInfoSpi.officialUrl,
                             thumbImageRsd = AppServices.appInfoSpi.appLauncherIconRsd,

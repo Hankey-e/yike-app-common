@@ -37,9 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -90,7 +88,7 @@ private fun CategoryCrudView(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
-            Icon(
+            Column(
                 modifier = Modifier
                     .clickableNoRipple {
                         vm.addIntent(
@@ -100,21 +98,43 @@ private fun CategoryCrudView(
                         )
                     }
                     .padding(horizontal = 0.dp, vertical = 24.dp)
-                    .circleClip()
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceColorAtElevation(
-                            elevation = 1.dp,
-                        )
-                    )
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .size(size = 36.dp)
                     .nothing(),
-                painter = iconRsd?.run {
-                    painterResource(id = this)
-                } ?: ColorPainter(color = Color.Transparent),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface,
-            )
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .circleClip()
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                elevation = 1.dp,
+                            )
+                        )
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
+                        .size(size = 36.dp)
+                        .nothing(),
+                    painter = iconRsd?.run {
+                        painterResource(id = this)
+                    } ?: painterResource(id = com.xiaojinzi.tally.lib.res.R.drawable.res_add1),
+                    contentDescription = null,
+                    tint = if (iconRsd == null) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(height = 8.dp)
+                        .nothing()
+                )
+                Text(
+                    text = if (iconRsd == null) "点击选择图标" else "点击更换图标",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.secondary,
+                    ),
+                    textAlign = TextAlign.Center,
+                )
+            }
 
             val focusRequesterForAccountName = remember { FocusRequester() }
             Row(
