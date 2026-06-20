@@ -1,5 +1,7 @@
 package com.xiaojinzi.tally.module.core.module.bill_crud.view
 
+import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -84,6 +86,26 @@ class BillCrudAct : BaseBusinessAct<BillCrudViewModel>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // 记账页从底部浮出 (打开下滑入, 关闭下滑出)
+        if (Build.VERSION.SDK_INT >= 34) {
+            overrideActivityTransition(
+                Activity.OVERRIDE_TRANSITION_OPEN,
+                com.xiaojinzi.tally.lib.res.R.anim.res_slide_in_up,
+                com.xiaojinzi.tally.lib.res.R.anim.res_hold,
+            )
+            overrideActivityTransition(
+                Activity.OVERRIDE_TRANSITION_CLOSE,
+                com.xiaojinzi.tally.lib.res.R.anim.res_hold,
+                com.xiaojinzi.tally.lib.res.R.anim.res_slide_out_down,
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(
+                com.xiaojinzi.tally.lib.res.R.anim.res_slide_in_up,
+                com.xiaojinzi.tally.lib.res.R.anim.res_hold,
+            )
+        }
+
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -114,6 +136,18 @@ class BillCrudAct : BaseBusinessAct<BillCrudViewModel>() {
             }
         }
 
+    }
+
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+    override fun finish() {
+        super.finish()
+        // 关闭时向底部滑出 (API 34+ 已由 overrideActivityTransition 处理)
+        if (Build.VERSION.SDK_INT < 34) {
+            overridePendingTransition(
+                com.xiaojinzi.tally.lib.res.R.anim.res_hold,
+                com.xiaojinzi.tally.lib.res.R.anim.res_slide_out_down,
+            )
+        }
     }
 
 }

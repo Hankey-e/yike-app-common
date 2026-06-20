@@ -105,12 +105,13 @@ private fun MainView(
         .collectAsState(
             initial = false
         )
-    // 离线 App: 本地昵称为空时, 先展示欢迎页引导填写昵称
+    // 离线 App: 本地昵称为空时才展示欢迎页.
+    // 初值用 null 表示"尚未从存储读出", 避免启动瞬间因初值为空而误闪欢迎页.
     val localNickName by AppServices
         .appConfigSpi
         .localNickNameStateOb
         .collectAsState(
-            initial = "",
+            initial = null,
         )
     BusinessContentView<MainViewModel>(
         needInit = needInit,
@@ -185,7 +186,7 @@ private fun MainView(
                 }
                 androidx.compose.animation.AnimatedVisibility(
                     modifier = Modifier
-                        .align(alignment = Alignment.BottomEnd)
+                        .align(alignment = Alignment.BottomCenter)
                         .nothing(),
                     visible = tabSelected in listOf(
                         MainTabDto.Bill,
@@ -310,7 +311,7 @@ private fun MainView(
                 }
             }
         }
-        if (!isShowedGuide1 && localNickName.isNotBlank()) {
+        if (!isShowedGuide1 && !localNickName.isNullOrBlank()) {
             var showIndex by remember {
                 mutableIntStateOf(value = 0)
             }
@@ -466,8 +467,8 @@ private fun MainView(
                 )
             }
         }
-        // 离线 App 欢迎页: 本地昵称为空时全屏展示, 引导填写昵称
-        if (localNickName.isBlank()) {
+        // 离线 App 欢迎页: 仅在确认本地昵称已加载且为空时全屏展示 (null = 尚未加载, 不展示)
+        if (localNickName?.isBlank() == true) {
             var nickNameInput by remember {
                 mutableStateOf(value = "")
             }
